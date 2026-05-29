@@ -146,14 +146,26 @@ def init_database():
 def ensure_project_created_at(conn):
     """
     Ensure projects table has a created_at column for ordering and history.
+    Also ensure users table has email, created_at, and status columns.
     """
+    # Check and add missing columns to projects table
     columns = {row[1] for row in conn.execute("PRAGMA table_info(projects)")}
     if "created_at" not in columns:
-        # SQLite doesn't allow non-constant defaults when adding a column.
         conn.execute("ALTER TABLE projects ADD COLUMN created_at TIMESTAMP")
         conn.execute(
             "UPDATE projects SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL"
         )
+    
+    # Check and add missing columns to users table
+    user_columns = {row[1] for row in conn.execute("PRAGMA table_info(users)")}
+    if "email" not in user_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN email TEXT")
+    if "created_at" not in user_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN created_at TIMESTAMP")
+        conn.execute("UPDATE users SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL")
+    if "status" not in user_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN status TEXT")
+        conn.execute("UPDATE users SET status = 'active' WHERE status IS NULL")
 
 
 def close_db_connection(conn):
