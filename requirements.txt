@@ -1,0 +1,12 @@
+# Freelancer Time and Invoice Management System
+# Requirements and Dependencies
+# Python 3.8 or higher required
+
+# Core Framework
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# Optional utilities
+python-dotenv==1.0.0
+
+# SQLite is built-in with Python, no additional package needed
