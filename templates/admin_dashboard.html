@@ -1,191 +1,134 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Admin Dashboard</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
+{% extends "base.html" %}
 
-<body class="bg-gray-100">
+{% block title %}Admin Dashboard - Freelancer Pro{% endblock %}
 
-<div class="p-8">
-
-    <!-- PAGE TITLE -->
-    <h1 class="text-4xl font-bold mb-6 text-gray-800">
-        Admin Dashboard
-    </h1>
-
-    <!-- TOP BUTTONS -->
-    <div class="flex flex-wrap gap-4 mb-8">
-
-        <a href="/projects"
-        class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-lg shadow">
-            View Projects
-        </a>
-
-        <a href="/manage_users"
-        class="bg-blue-500 hover:bg-green-600 text-white px-5 py-3 rounded-lg shadow">
-            Manage Users
-        </a>
-
-        <a href="/admin/project_monitor"
-        class="bg-blue-500 hover:bg-indigo-600 text-white px-5 py-3 rounded-lg shadow">
-            Project Monitoring
-        </a>
-
-        <a href="/time_tracking"
-        class="bg-blue-500 hover:bg-purple-600 text-white px-5 py-3 rounded-lg shadow">
-            Time Tracking
-        </a>
-
-        <a href="/logout"
-        class="bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded-lg shadow">
-            Logout
-        </a>
-
+{% block content %}
+<div>
+    <!-- PAGE HEADER -->
+    <div style="margin-bottom: 30px;">
+        <h1 style="margin-bottom: 8px;">Admin Dashboard</h1>
+        <p style="color: #64748b; font-size: 15px;">Welcome back! Here's what's happening with your system.</p>
     </div>
 
-    <!-- DASHBOARD CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-
-        <!-- TOTAL USERS -->
-        <div class="bg-white p-6 rounded-xl shadow">
-            <h2 class="text-gray-500 text-lg">
-                Total Users
-            </h2>
-
-            <p class="text-4xl font-bold text-blue-600 mt-3">
-                {{ total_users }}
-            </p>
+    <!-- DASHBOARD STATS GRID -->
+    <div class="grid-4" style="margin-bottom: 30px;">
+        <!-- TOTAL USERS CARD -->
+        <div class="stat-card" style="border-left-color: #4f46e5;">
+            <div class="stat-label">👥 Total Users</div>
+            <div class="stat-value" style="color: #4f46e5;">{{ total_users }}</div>
+            <div class="stat-change">Freelancers & Admins</div>
         </div>
 
-        <!-- TOTAL PROJECTS -->
-        <div class="bg-white p-6 rounded-xl shadow">
-            <h2 class="text-gray-500 text-lg">
-                Total Projects
-            </h2>
-
-            <p class="text-4xl font-bold text-green-600 mt-3">
-                {{ total_projects }}
-            </p>
+        <!-- TOTAL PROJECTS CARD -->
+        <div class="stat-card" style="border-left-color: #10b981;">
+            <div class="stat-label">📋 Total Projects</div>
+            <div class="stat-value" style="color: #10b981;">{{ total_projects }}</div>
+            <div class="stat-change">All Project Types</div>
         </div>
 
-        <!-- ACTIVE PROJECTS -->
-        <div class="bg-white p-6 rounded-xl shadow">
-            <h2 class="text-gray-500 text-lg">
-                Active Projects
-            </h2>
-
-            <p class="text-4xl font-bold text-yellow-500 mt-3">
-                {{ active_projects }}
-            </p>
+        <!-- ACTIVE PROJECTS CARD -->
+        <div class="stat-card" style="border-left-color: #f59e0b;">
+            <div class="stat-label">⚡ Active Projects</div>
+            <div class="stat-value" style="color: #f59e0b;">{{ active_projects }}</div>
+            <div class="stat-change">Currently Running</div>
         </div>
 
-        <!-- TOTAL HOURS -->
-        <div class="bg-white p-6 rounded-xl shadow">
-            <h2 class="text-gray-500 text-lg">
-                Total Hours
-            </h2>
-
-            <p class="text-4xl font-bold text-purple-600 mt-3">
-                {{ "%.2f"|format(total_hours) }}
-            </p>
+        <!-- TOTAL HOURS CARD -->
+        <div class="stat-card" style="border-left-color: #a855f7;">
+            <div class="stat-label">⏱ Total Hours</div>
+            <div class="stat-value" style="color: #a855f7;">{{ "%.1f"|format(total_hours) }}</div>
+            <div class="stat-change">Tracked Hours</div>
         </div>
-
     </div>
 
-    <!-- TOTAL EARNINGS -->
-    <div class="bg-green-500 text-white p-6 rounded-xl shadow mb-10">
-
-        <h2 class="text-2xl font-bold">
-            Total Earnings
-        </h2>
-
-        <p class="text-4xl font-bold mt-3">
-            ₹{{  "%.2f"|format(total_earnings) }}
-        </p>
-
+    <!-- TOTAL EARNINGS CARD -->
+    <div class="card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; margin-bottom: 30px; border: none;">
+        <div style="font-size: 16px; opacity: 0.9; margin-bottom: 10px;">💰 Total System Earnings</div>
+        <div style="font-size: 36px; font-weight: bold;">₹{{ "%.2f"|format(total_earnings) }}</div>
+        <div style="font-size: 13px; opacity: 0.8; margin-top: 5px;">Cumulative earnings from all projects</div>
     </div>
 
-    <!-- PROJECT TABLE -->
-    <div class="bg-white rounded-xl shadow overflow-hidden">
-
-        <div class="bg-blue-500 text-white p-4">
-            <h2 class="text-2xl font-bold">
-                All Projects
-            </h2>
-        </div>
-
-        <table class="w-full">
-
-            <tr class="bg-gray-200 text-gray-700">
-
-                <th class="p-4 text-left">Project Name</th>
-                <th class="p-4 text-left">Type</th>
-                <th class="p-4 text-left">Rate</th>
-                <th class="p-4 text-left">Status</th>
-                <th class="p-4 text-left">Hours</th>
-
-            </tr>
-
-            {% for project in projects %}
-
-            <tr class="border-b hover:bg-gray-50">
-
-                <td class="p-4">
-                    {{ project.name }}
-                </td>
-
-                <td class="p-4">
-                    {{ project.type }}
-                </td>
-
-                <td class="p-4">
-                    ₹{{ project.rate }}
-                </td>
-
-                <td class="p-4">
-
-                    {% if project.status == "Active" %}
-
-                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-                        Active
-                    </span>
-
-                    {% elif project.status == "Completed" %}
-
-                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-                        Completed
-                    </span>
-
-                    {% elif project.status == "Inactive" %}
-
-                    <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                        Inactive
-                    </span>
-
+    <!-- PROJECTS TABLE -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="card-header">📊 All Projects Overview</div>
+        
+        <div style="overflow-x: auto;">
+            <table style="margin-top: 0; box-shadow: none;">
+                <thead>
+                    <tr style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white;">
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Project Name</th>
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Type</th>
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Rate (₹)</th>
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Status</th>
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Hours</th>
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if projects %}
+                        {% for project in projects %}
+                        <tr>
+                            <td style="font-weight: 600; color: #0f172a;">{{ project.name }}</td>
+                            <td>
+                                <span style="background-color: #e0e7ff; color: #312e81; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                    {{ project.type }}
+                                </span>
+                            </td>
+                            <td style="font-weight: 600;">₹{{ project.rate }}</td>
+                            <td>
+                                {% if project.status == "Active" %}
+                                    <span class="badge badge-success">✓ Active</span>
+                                {% elif project.status == "Completed" %}
+                                    <span class="badge badge-info">✓ Completed</span>
+                                {% elif project.status == "Inactive" %}
+                                    <span class="badge" style="background-color: #f3f4f6; color: #64748b;">⊘ Inactive</span>
+                                {% else %}
+                                    <span class="badge badge-warning">{{ project.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-weight: 600;">{{ "%.1f"|format(project.total_hours) }}h</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="/edit_project/{{ project.id }}" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">
+                                        Edit
+                                    </a>
+                                    <a href="/delete_project/{{ project.id }}" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; onclick: return confirm('Are you sure?');">
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
                     {% else %}
-
-                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
-                        {{ project.status }}
-                    </span>
-
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #94a3b8; padding: 40px;">
+                                No projects found. <a href="/add_project" style="color: #4f46e5; text-decoration: underline;">Create one now</a>
+                            </td>
+                        </tr>
                     {% endif %}
-
-                </td>
-
-                <td class="p-4">
-                    {{ project.total_hours }}
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </table>
-
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </div>
 
-</body>
-</html>
+<style>
+    .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    
+    @media (max-width: 1024px) {
+        .grid-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .grid-4 {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
