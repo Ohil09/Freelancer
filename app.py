@@ -550,7 +550,7 @@ def project_timer(project_id):
         if request_invoice == "1":
             return redirect(f"/invoice_request/{project_id}")
         
-        return redirect("/time_tracking")
+        return redirect("/")
     
     close_db_connection(conn)
     return render_template("time.html", project=project)

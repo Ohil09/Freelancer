@@ -1,59 +1,41 @@
 """
-Initialize Admin User for Freelancer Management System
-
-This script creates the default admin user for the system.
-Run this after first database setup.
+init_admin.py
+Creates the default admin user for the Freelancer Management System.
+Run this after clear_data.py or on a fresh database.
 """
 
-from database import get_db_connection, close_db_connection, init_database
+import sqlite3
 
+conn = sqlite3.connect('database.db')
 
-def create_admin():
-    """Create default admin user"""
-    try:
-        # Initialize database first
-        init_database()
-        
-        conn = get_db_connection()
-        
-        # Check if admin already exists
-        existing = conn.execute(
-            "SELECT * FROM users WHERE username=?",
-            ("admin",)
-        ).fetchone()
-        
-        if existing:
-            print("✓ Admin user already exists!")
-            print(f"  ID: {existing['id']}")
-            print(f"  Username: {existing['username']}")
-            close_db_connection(conn)
-            return False
-        
-        # Create admin user
+print("Initializing admin user...")
+print("=" * 40)
+
+try:
+    # Check if admin already exists
+    existing = conn.execute(
+        "SELECT * FROM users WHERE username = ?", ("admin",)
+    ).fetchone()
+
+    if existing:
+        print("✓ Admin user already exists, skipping.")
+    else:
         conn.execute(
-            "INSERT INTO users(username, password, role, email) VALUES (?, ?, ?, ?)",
-            ("admin", "admin123", "admin", "admin@example.com")
+            "INSERT INTO users (username, password, role, email, status) VALUES (?, ?, ?, ?, ?)",
+            ("admin", "admin123", "admin", "admin@example.com", "active")
         )
         conn.commit()
-        close_db_connection(conn)
-        
         print("✓ Admin user created successfully!")
-        print("\n  Login Credentials:")
-        print("  ==================")
-        print("  Username: admin")
-        print("  Password: admin123")
-        print("  Role: Admin")
-        print("\n  WARNING: Change the password after first login!")
-        print("  NEVER share admin credentials!")
-        
-        return True
-        
-    except Exception as e:
-        print(f"✗ Error creating admin user: {e}")
-        return False
 
+    print("=" * 40)
+    print("  Login Credentials:")
+    print("  Username : admin")
+    print("  Password : admin123")
+    print("  Role     : Admin")
+    print("=" * 40)
+    print("  WARNING: Change the password after first login!")
 
-if __name__ == "__main__":
-    print("Initializing Admin User for Freelancer Management System")
-    print("=" * 55)
-    create_admin()
+except Exception as e:
+    print(f"✗ Error creating admin user: {e}")
+
+conn.close()
