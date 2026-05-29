@@ -1,94 +1,141 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Add Project</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
+{% extends "base.html" %}
 
-<body class="bg-gray-100">
+{% block title %}Add Project - Freelancer Pro{% endblock %}
 
-<div class="max-w-2xl mx-auto p-8">
+{% block content %}
+<div>
+    <!-- PAGE HEADER -->
+    <div style="margin-bottom: 30px;">
+        <h1 style="margin-bottom: 8px;">➕ Add New Project</h1>
+        <p style="color: #64748b; font-size: 15px;">Create and configure a new project.</p>
+    </div>
 
-<h1 class="text-3xl font-bold mb-6">Add Project</h1>
-
-{% if error %}
-<div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
-    {{ error }}
+    <!-- ADD PROJECT FORM -->
+    <div class="card" style="max-width: 600px;">
+        {% if error %}
+            <div class="alert alert-danger">
+                <strong>⚠️ Error:</strong> {{ error }}
+            </div>
+        {% endif %}
+        
+        <form method="POST">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">
+                    Project Name <span style="color: #f43f5e;">*</span>
+                </label>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter project name"
+                    required
+                    style="width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px;"
+                >
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">
+                    Project Type <span style="color: #f43f5e;">*</span>
+                </label>
+                <input
+                    type="text"
+                    name="type"
+                    placeholder="E.g., Web Development, Design, Content Writing"
+                    required
+                    style="width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px;"
+                >
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">
+                    Hourly Rate (₹) <span style="color: #f43f5e;">*</span>
+                </label>
+                <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    name="rate"
+                    placeholder="Enter hourly rate"
+                    required
+                    style="width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px;"
+                >
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">
+                    Status
+                </label>
+                <select
+                    name="status"
+                    style="width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px;"
+                >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">
+                    Deadline (Optional)
+                </label>
+                <input
+                    type="date"
+                    name="deadline"
+                    style="width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px;"
+                >
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">
+                    Description (Optional)
+                </label>
+                <textarea
+                    name="description"
+                    placeholder="Project description..."
+                    style="width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical; min-height: 100px;"
+                ></textarea>
+            </div>
+            
+            {% if session.get("role") == "admin" %}
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">
+                    Assign to Freelancer <span style="color: #f43f5e;">*</span>
+                </label>
+                <select
+                    name="user_id"
+                    required
+                    style="width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px;"
+                >
+                    <option value="">-- Select Freelancer --</option>
+                    {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button type="submit" class="btn btn-primary" style="padding: 12px 30px;">
+                    ✓ Save Project
+                </button>
+                
+                <a href="/projects" class="btn btn-secondary" style="padding: 12px 30px; text-decoration: none;">
+                    📋 View Projects
+                </a>
+                
+                <a href="/" class="btn" style="padding: 12px 30px; text-decoration: none; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white;">
+                    📊 Dashboard
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
-{% endif %}
 
-<form method="POST" class="bg-white p-6 rounded-xl shadow">
-
-<div class="mb-4">
-    <label class="block font-semibold mb-2">Project Name *</label>
-    <input name="name" placeholder="Enter project name"
-    class="border p-3 w-full rounded" required>
-</div>
-
-<div class="mb-4">
-    <label class="block font-semibold mb-2">Project Type *</label>
-    <input name="type" placeholder="E.g., Web Development, Design"
-    class="border p-3 w-full rounded" required>
-</div>
-
-<div class="mb-4">
-    <label class="block font-semibold mb-2">Hourly Rate (₹) *</label>
-    <input type="number" step="0.01" name="rate" placeholder="Enter hourly rate"
-    class="border p-3 w-full rounded" required>
-</div>
-
-<div class="mb-4">
-    <label class="block font-semibold mb-2">Status</label>
-    <select name="status" class="border p-3 w-full rounded">
-    <option value="Active">Active</option>
-    <option value="Inactive">Inactive</option>
-    <option value="Completed">Completed</option>
-    </select>
-</div>
-
-<div class="mb-4">
-    <label class="block font-semibold mb-2">Deadline</label>
-    <input type="date" name="deadline" class="border p-3 w-full rounded">
-</div>
-
-<div class="mb-4">
-    <label class="block font-semibold mb-2">Description</label>
-    <textarea name="description" placeholder="Project description" 
-    class="border p-3 w-full rounded h-24"></textarea>
-</div>
-
-{% if session["role"] == "admin" %}
-<div class="mb-4">
-    <label class="block font-semibold mb-2">Assign to Freelancer *</label>
-    <select name="user_id" class="border p-3 w-full rounded" required>
-    <option value="">-- Select Freelancer --</option>
-    {% for user in users %}
-    <option value="{{ user.id }}">
-        {{ user.username }}
-    </option>
-    {% endfor %}
-    </select>
-</div>
-{% endif %}
-
-<div class="flex gap-4">
-    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded">
-    Save Project
-    </button>
-    
-    <a href="/projects" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded">
-    Cancel
-    </a>
-    
-    <a href="/" class="bg-blue-800 hover:bg-blue-900 text-white px-6 py-3 rounded">
-    Dashboard
-    </a>
-</div>
-</div>
-
-</form>
-
-</div>
-
-</body>
-</html>
+<style>
+    @media (max-width: 768px) {
+        .card {
+            padding: 20px !important;
+        }
+    }
+</style>
+{% endblock %}
