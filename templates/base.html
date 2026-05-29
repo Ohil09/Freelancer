@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Freelancer Management System{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        :root {
+            --color-primary: #4f46e5;
+            --color-primary-dark: #4338ca;
+            --color-secondary: #10b981;
+            --color-accent: #f59e0b;
+            --color-danger: #f43f5e;
+            --color-bg: #f8fafc;
+            --color-text: #0f172a;
+            --color-border: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+        }
+        
+        .navbar-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .navbar-content {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-brand {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .navbar-menu {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .navbar-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .navbar-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .navbar-link.active {
+            background-color: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+        
+        .navbar-link.btn-logout {
+            background-color: var(--color-danger);
+            padding: 8px 20px;
+        }
+        
+        .navbar-link.btn-logout:hover {
+            background-color: #e11d48;
+        }
+        
+        main {
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+            padding: 30px 20px;
+        }
+        
+        .container-main {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Mobile menu toggle */
+        .navbar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-fixed {
+                padding: 0 15px;
+            }
+            
+            .navbar-menu {
+                gap: 10px;
+            }
+            
+            .navbar-link {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+            
+            .navbar-brand {
+                font-size: 16px;
+                gap: 8px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .navbar-link:not(.navbar-link.btn-logout) {
+                display: none;
+            }
+            
+            .navbar-toggle {
+                display: block;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    {% if session.get("user_id") %}
+    <nav class="navbar-fixed">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                    <polyline points="13 2 13 9 20 9"/>
+                </svg>
+                Freelancer Pro
+            </a>
+            
+            <div class="navbar-menu">
+                <a href="/" class="navbar-link">
+                    <span>📊 Dashboard</span>
+                </a>
+                
+                {% if session.get("role") == "admin" %}
+                    <a href="/manage_users" class="navbar-link">
+                        <span>👥 Users</span>
+                    </a>
+                    
+                    <a href="/admin/project_monitor" class="navbar-link">
+                        <span>📈 Monitoring</span>
+                    </a>
+                    
+                    <a href="/projects" class="navbar-link">
+                        <span>📋 Projects</span>
+                    </a>
+                    
+                    <a href="/admin/progress" class="navbar-link">
+                        <span>✓ Progress</span>
+                    </a>
+                    
+                    <a href="/invoices" class="navbar-link">
+                        <span>💰 Invoices</span>
+                    </a>
+                    
+                    <a href="/payments" class="navbar-link">
+                        <span>💳 Payments</span>
+                    </a>
+                {% else %}
+                    <a href="/projects" class="navbar-link">
+                        <span>📋 My Projects</span>
+                    </a>
+                    
+                    <a href="/time_tracking" class="navbar-link">
+                        <span>⏱ Time Track</span>
+                    </a>
+                    
+                    <a href="/project_progress" class="navbar-link">
+                        <span>✓ Progress</span>
+                    </a>
+                    
+                    <a href="/invoices" class="navbar-link">
+                        <span>💰 Invoices</span>
+                    </a>
+                {% endif %}
+                
+                <div style="display: flex; align-items: center; gap: 15px; margin-left: 15px; padding-left: 15px; border-left: 1px solid rgba(255, 255, 255, 0.2);">
+                    <span style="color: white; font-size: 14px;">{{ session.get("username") }}</span>
+                    <a href="/logout" class="navbar-link btn-logout">
+                         Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main>
+        <div class="container-main">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    
+    <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

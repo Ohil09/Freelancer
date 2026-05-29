@@ -1,66 +1,97 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Invoices</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+{% extends "base.html" %}
 
-<body class="bg-gray-100 p-8">
+{% block title %}Invoices - Freelancer Pro{% endblock %}
 
-<div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Invoices</h1>
-        <a href="/" class="bg-blue-500 text-white px-4 py-2 rounded">Dashboard</a>
+{% block content %}
+<div>
+    <!-- PAGE HEADER -->
+    <div style="margin-bottom: 30px;">
+        <h1 style="margin-bottom: 8px;">💰 Invoices</h1>
+        <p style="color: #64748b; font-size: 15px;">Manage and track your invoice requests.</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow overflow-hidden">
-        <table class="w-full">
-            <thead class="bg-blue-600 text-white">
-                <tr>
-                    <th class="p-4 text-left">Project</th>
-                    {% if role == "admin" %}
-                        <th class="p-4 text-left">Freelancer</th>
-                    {% endif %}
-                    <th class="p-4 text-left">Hours</th>
-                    <th class="p-4 text-left">Amount</th>
-                    <th class="p-4 text-left">Status</th>
-                    {% if role == "admin" %}
-                        <th class="p-4 text-left">Action</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for invoice in invoices %}
-                <tr class="border-b">
-                    <td class="p-4">{{ invoice.project_name }}</td>
-                    {% if role == "admin" %}
-                        <td class="p-4">{{ invoice.username }}</td>
-                    {% endif %}
-                    <td class="p-4">{{ "%.2f"|format(invoice.total_hours) }}</td>
-                    <td class="p-4">₹{{ "%.2f"|format(invoice.total_amount) }}</td>
-                    <td class="p-4">{{ invoice.status }}</td>
-                    {% if role == "admin" %}
-                        <td class="p-4 space-x-2">
-                            {% if invoice.status == "Pending" %}
-                                <a href="/approve_invoice/{{ invoice.id }}"
-                                   class="bg-green-500 text-white px-3 py-1 rounded">
-                                    Approve
-                                </a>
-                                <a href="/reject_invoice/{{ invoice.id }}"
-                                   class="bg-red-500 text-white px-3 py-1 rounded">
-                                    Reject
-                                </a>
-                            {% else %}
-                                <span class="text-gray-500">No actions</span>
+    <!-- INVOICES TABLE -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="card-header">📋 Invoice List</div>
+        
+        <div style="overflow-x: auto;">
+            <table style="margin-top: 0; box-shadow: none;">
+                <thead>
+                    <tr style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white;">
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Project</th>
+                        {% if session.get("role") == "admin" %}
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Freelancer</th>
+                        {% endif %}
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Hours</th>
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Amount</th>
+                        <th style="border-bottom: 2px solid #4f46e5; color: white;">Status</th>
+                        {% if session.get("role") == "admin" %}
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if invoices %}
+                        {% for invoice in invoices %}
+                        <tr>
+                            <td style="font-weight: 600; color: #0f172a;">{{ invoice.project_name }}</td>
+                            {% if session.get("role") == "admin" %}
+                                <td style="color: #64748b;">{{ invoice.username }}</td>
                             {% endif %}
-                        </td>
+                            <td style="font-weight: 600;">{{ "%.1f"|format(invoice.total_hours) }}h</td>
+                            <td style="font-weight: 600; color: #10b981;">₹{{ "%.2f"|format(invoice.total_amount) }}</td>
+                            <td>
+                                {% if invoice.status == "Pending" %}
+                                    <span class="badge badge-warning">⏳ Pending</span>
+                                {% elif invoice.status == "Approved" %}
+                                    <span class="badge badge-success">✓ Approved</span>
+                                {% elif invoice.status == "Rejected" %}
+                                    <span class="badge badge-danger">✕ Rejected</span>
+                                {% else %}
+                                    <span class="badge badge-info">{{ invoice.status }}</span>
+                                {% endif %}
+                            </td>
+                            {% if session.get("role") == "admin" %}
+                                <td>
+                                    <div style="display: flex; gap: 6px;">
+                                        {% if invoice.status == "Pending" %}
+                                            <a href="/approve_invoice/{{ invoice.id }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                                                ✓ Approve
+                                            </a>
+                                            <a href="/reject_invoice/{{ invoice.id }}" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">
+                                                ✕ Reject
+                                            </a>
+                                        {% else %}
+                                            <span style="color: #94a3b8; font-size: 12px;">—</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="{% if session.get('role') == 'admin' %}6{% else %}4{% endif %}" style="text-align: center; color: #94a3b8; padding: 40px;">
+                                No invoices found.
+                            </td>
+                        </tr>
                     {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-</body>
-</html>
+<style>
+    @media (max-width: 768px) {
+        .card table {
+            font-size: 13px;
+        }
+        
+        .btn {
+            padding: 5px 10px !important;
+            font-size: 11px !important;
+        }
+    }
+</style>
+{% endblock %}

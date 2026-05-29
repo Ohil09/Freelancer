@@ -1,104 +1,262 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Dashboard</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
+{% extends "base.html" %}
 
-<body class="bg-gray-100">
+{% block title %}Dashboard - Freelancer Pro{% endblock %}
 
-<div class="p-8">
+{% block content %}
+{% if session.get("role") == "admin" %}
+    {# ADMIN DASHBOARD CONTENT #}
+    <div>
+        <!-- PAGE HEADER -->
+        <div style="margin-bottom: 30px;">
+            <h1 style="margin-bottom: 8px;">Admin Dashboard</h1>
+            <p style="color: #64748b; font-size: 15px;">Welcome back! Here's what's happening with your system.</p>
+        </div>
 
-<h1 class="text-3xl font-bold mb-6">Freelancer Dashboard</h1>
-{% if session["role"] == "admin" %}
+        <!-- DASHBOARD STATS GRID -->
+        <div class="grid-4" style="margin-bottom: 30px;">
+            <!-- TOTAL USERS CARD -->
+            <div class="stat-card" style="border-left-color: #4f46e5;">
+                <div class="stat-label">👥 Total Users</div>
+                <div class="stat-value" style="color: #4f46e5;">{{ total_users }}</div>
+                <div class="stat-change">Freelancers & Admins</div>
+            </div>
 
-<div class="flex gap-4 mb-6">
+            <!-- TOTAL PROJECTS CARD -->
+            <div class="stat-card" style="border-left-color: #10b981;">
+                <div class="stat-label">📋 Total Projects</div>
+                <div class="stat-value" style="color: #10b981;">{{ total_projects }}</div>
+                <div class="stat-change">All Project Types</div>
+            </div>
 
-    <a href="/admin"
-       class="bg-blue-700 hover:bg-blue-600 text-white px-5 py-3 rounded-lg font-semibold">
-        Admin Panel
-    </a>
+            <!-- ACTIVE PROJECTS CARD -->
+            <div class="stat-card" style="border-left-color: #f59e0b;">
+                <div class="stat-label">⚡ Active Projects</div>
+                <div class="stat-value" style="color: #f59e0b;">{{ active_projects }}</div>
+                <div class="stat-change">Currently Running</div>
+            </div>
 
-    <a href="/manage_users"
-       class="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-lg font-semibold">
-        Manage Users
-    </a>
+            <!-- TOTAL HOURS CARD -->
+            <div class="stat-card" style="border-left-color: #a855f7;">
+                <div class="stat-label">⏱ Total Hours</div>
+                <div class="stat-value" style="color: #a855f7;">{{ "%.1f"|format(total_hours) }}</div>
+                <div class="stat-change">Tracked Hours</div>
+            </div>
+        </div>
 
-<a href="/time_tracking"
-class="bg-purple-500 text-white px-4 py-2 rounded">
-    Track Project Time
-</a>
+        <!-- TOTAL EARNINGS CARD -->
+        <div class="card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; margin-bottom: 30px; border: none;">
+            <div style="font-size: 16px; opacity: 0.9; margin-bottom: 10px;">💰 Total System Earnings</div>
+            <div style="font-size: 36px; font-weight: bold;">₹{{ "%.2f"|format(total_earnings) }}</div>
+            <div style="font-size: 13px; opacity: 0.8; margin-top: 5px;">Cumulative earnings from all projects</div>
+        </div>
 
-</div>
+        <!-- PROJECTS TABLE -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="card-header">📊 All Projects Overview</div>
+            
+            <div style="overflow-x: auto;">
+                <table style="margin-top: 0; box-shadow: none;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white;">
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Project Name</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Type</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Rate (₹)</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Status</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Hours</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if projects %}
+                            {% for project in projects %}
+                            <tr>
+                                <td style="font-weight: 600; color: #0f172a;">{{ project.name }}</td>
+                                <td>
+                                    <span style="background-color: #e0e7ff; color: #312e81; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                        {{ project.type }}
+                                    </span>
+                                </td>
+                                <td style="font-weight: 600;">₹{{ project.rate }}</td>
+                                <td>
+                                    {% if project.status == "Active" %}
+                                        <span class="badge badge-success">✓ Active</span>
+                                    {% elif project.status == "Completed" %}
+                                        <span class="badge badge-info">✓ Completed</span>
+                                    {% elif project.status == "Inactive" %}
+                                        <span class="badge" style="background-color: #f3f4f6; color: #64748b;">⊘ Inactive</span>
+                                    {% else %}
+                                        <span class="badge badge-warning">{{ project.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="font-weight: 600;">{{ "%.1f"|format(project.total_hours) }}h</td>
+                                <td>
+                                    <div style="display: flex; gap: 8px;">
+                                        <a href="/edit_project/{{ project.id }}" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">
+                                            Edit
+                                        </a>
+                                        <a href="/delete_project/{{ project.id }}" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; onclick: return confirm('Are you sure?');">
+                                            Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: #94a3b8; padding: 40px;">
+                                    No projects found. <a href="/add_project" style="color: #4f46e5; text-decoration: underline;">Create one now</a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    {# FREELANCER DASHBOARD CONTENT #}
+    <div>
+        <!-- PAGE HEADER -->
+        <div style="margin-bottom: 30px;">
+            <h1 style="margin-bottom: 8px;">Welcome, {{ session.get('username', 'Freelancer') }}! 👋</h1>
+            <p style="color: #64748b; font-size: 15px;">Track your projects, hours, and earnings all in one place.</p>
+        </div>
 
+        <!-- DASHBOARD STATS GRID -->
+        <div class="grid-4" style="margin-bottom: 30px;">
+            <!-- TOTAL PROJECTS CARD -->
+            <div class="stat-card" style="border-left-color: #4f46e5;">
+                <div class="stat-label">📋 Total Projects</div>
+                <div class="stat-value" style="color: #4f46e5;">{{ total_projects }}</div>
+                <div class="stat-change">Your Projects</div>
+            </div>
+
+            <!-- ACTIVE PROJECTS CARD -->
+            <div class="stat-card" style="border-left-color: #10b981;">
+                <div class="stat-label">⚡ Active Projects</div>
+                <div class="stat-value" style="color: #10b981;">{{ active_projects }}</div>
+                <div class="stat-change">Currently Working</div>
+            </div>
+
+            <!-- TOTAL HOURS CARD -->
+            <div class="stat-card" style="border-left-color: #f59e0b;">
+                <div class="stat-label">⏱ Total Hours</div>
+                <div class="stat-value" style="color: #f59e0b;">{{ "%.1f"|format(total_hours) }}</div>
+                <div class="stat-change">Hours Tracked</div>
+            </div>
+
+            <!-- TOTAL EARNINGS CARD -->
+            <div class="stat-card" style="border-left-color: #a855f7;">
+                <div class="stat-label">💰 Total Earnings</div>
+                <div class="stat-value" style="color: #a855f7;">₹{{ "%.2f"|format(total_earnings) }}</div>
+                <div class="stat-change">Your Earnings</div>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div style="display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap;">
+            <a href="/add_project" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px;">
+                ➕ Add New Project
+            </a>
+            <a href="/time_tracking" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+                ⏱ Track Time
+            </a>
+            <a href="/project_progress" class="btn btn-accent" style="display: inline-flex; align-items: center; gap: 8px;">
+                ✓ Update Progress
+            </a>
+            <a href="/invoices" class="btn btn-info" style="display: inline-flex; align-items: center; gap: 8px;">
+                💰 View Invoices
+            </a>
+        </div>
+
+        <!-- PROJECTS TABLE -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="card-header">📊 My Projects</div>
+            
+            <div style="overflow-x: auto;">
+                <table style="margin-top: 0; box-shadow: none;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white;">
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Project Name</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Type</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Rate (₹)</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Status</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Hours</th>
+                            <th style="border-bottom: 2px solid #4f46e5; color: white;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if projects %}
+                            {% for project in projects %}
+                            <tr>
+                                <td style="font-weight: 600; color: #0f172a;">{{ project.name }}</td>
+                                <td>
+                                    <span style="background-color: #e0e7ff; color: #312e81; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                        {{ project.type }}
+                                    </span>
+                                </td>
+                                <td style="font-weight: 600;">₹{{ project.rate }}</td>
+                                <td>
+                                    {% if project.status == "Active" %}
+                                        <span class="badge badge-success">✓ Active</span>
+                                    {% elif project.status == "Completed" %}
+                                        <span class="badge badge-info">✓ Completed</span>
+                                    {% elif project.status == "Inactive" %}
+                                        <span class="badge" style="background-color: #f3f4f6; color: #64748b;">⊘ Inactive</span>
+                                    {% else %}
+                                        <span class="badge badge-warning">{{ project.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="font-weight: 600;">{{ "%.1f"|format(project.total_hours) }}h</td>
+                                <td>
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <a href="/time/{{ project.id }}" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">
+                                            ⏱ Track
+                                        </a>
+                                        <a href="/edit_project/{{ project.id }}" class="btn btn-accent" style="padding: 6px 12px; font-size: 12px;">
+                                            ✎ Edit
+                                        </a>
+                                        <a href="/invoice/{{ project.id }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                                            💰 Invoice
+                                        </a>
+                                        <a href="/delete_project/{{ project.id }}" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="return confirm('Are you sure you want to delete this project?');">
+                                            🗑 Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: #94a3b8; padding: 40px;">
+                                    No projects yet. <a href="/add_project" style="color: #4f46e5; text-decoration: underline; font-weight: 600;">Create your first project</a> to get started!
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endif %}
-<!-- DASHBOARD CARDS -->
-<div class="grid grid-cols-4 gap-6 mb-8">
 
-<div class="bg-white p-6 rounded shadow">
-<h2 class="text-gray-500">Total Projects</h2>
-<p class="text-3xl font-bold">{{ total_projects }}</p>
-</div>
-
-<div class="bg-white p-6 rounded shadow">
-<h2 class="text-gray-500">Active Projects</h2>
-<p class="text-3xl font-bold">{{ active_projects }}</p>
-</div>
-
-<div class="bg-white p-6 rounded shadow">
-<h2 class="text-gray-500">Total Hours</h2>
-<p class="text-3xl font-bold">{{ "%.2f"|format(total_hours) }}</p>
-</div>
-
-<div class="bg-white p-6 rounded shadow">
-<h2 class="text-gray-500">Total Earnings</h2>
-<p class="text-3xl font-bold text-green-600">
-₹{{ "%.2f"|format(total_earnings) }}
-</p>
-</div>
-
-</div>
-<div class="bg-green-500 text-white p-4 rounded mb-6 text-xl font-bold">
-Total Earnings: ${{ total_earnings }}
-</div>
-<a href="/projects" class="bg-blue-500 text-white px-4 py-2 rounded">
-View Projects
-</a>
-
-<a href="/progress_update"
-class="bg-green-600 text-white px-4 py-2 rounded ml-2">
-Progress Updates
-</a>
-
-{% if session["role"] == "admin" %}
-
-<a href="/admin/progress"
-class="bg-purple-600 text-white px-4 py-2 rounded ml-2">
-Monitor Progress
-</a>
-
-{% endif %}
-<table class="mt-6 w-full bg-white shadow">
-
-<tr class="bg-gray-200">
-<th class="p-2">Project Name</th>
-<th class="p-2">Type</th>
-<th class="p-2">Rate</th>
-<th class="p-2">Status</th>
-</tr>
-
-{% for project in projects %}
-<tr>
-<td class="p-2">{{project.name}}</td>
-<td class="p-2">{{project.type}}</td>
-<td class="p-2">{{project.rate}}</td>
-<td class="p-2">{{project.status}}</td>
-</tr>
-{% endfor %}
-
-</table>
-
-</div>
-
-</body>
-</html>
+<style>
+    .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    
+    @media (max-width: 1024px) {
+        .grid-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .grid-4 {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
