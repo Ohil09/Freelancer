@@ -306,6 +306,7 @@ def add_project():
     """Add a new project"""
     conn = get_db_connection()
     role = session["role"]
+    error = None
     
     # Get users list for admin
     users = []
@@ -332,24 +333,39 @@ def add_project():
         # Determine user_id
         if role == "admin":
             user_id = request.form.get("user_id")
+            if not user_id:
+                close_db_connection(conn)
+                return render_template(
+                    "add_project.html",
+                    users=users,
+                    error="Please select a freelancer"
+                )
         else:
             user_id = session["user_id"]
         
         # Insert project
-        conn.execute(
-            """INSERT INTO projects(
-                    name, type, rate, status, user_id, deadline, description, created_at
-                )
-               VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)""",
-            (name, project_type, rate, status, user_id, deadline, description)
-        )
-        conn.commit()
-        close_db_connection(conn)
-        
-        return redirect("/projects")
+        try:
+            conn.execute(
+                """INSERT INTO projects(
+                        name, type, rate, status, user_id, deadline, description, created_at
+                    )
+                   VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)""",
+                (name, project_type, rate, status, user_id, deadline, description)
+            )
+            conn.commit()
+            close_db_connection(conn)
+            return redirect("/projects")
+        except Exception as e:
+            error = f"Error adding project: {str(e)}"
+            close_db_connection(conn)
+            return render_template(
+                "add_project.html",
+                users=users,
+                error=error
+            )
     
     close_db_connection(conn)
-    return render_template("add_project.html", users=users)
+    return render_template("add_project.html", users=users, error=error)
 
 
 @app.route("/edit_project/<int:project_id>", methods=["GET", "POST"])
