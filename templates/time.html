@@ -1,81 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Time Tracking</title>
-
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
+<title>Time Tracking - {{ project.name }}</title>
 <script src="https://cdn.tailwindcss.com"></script>
-
 </head>
 
 <body class="bg-gray-100">
 
-<div class="p-8">
+<div class="max-w-2xl mx-auto p-8">
 
-<h1 class="text-2xl font-bold mb-6">
-Track Time for {{project.name}}
-</h1>
+    <h1 class="text-3xl font-bold mb-2">Track Time</h1>
+    <p class="text-gray-500 mb-8">Project: <span class="font-semibold text-blue-600">{{ project.name }}</span></p>
+    <a href="/"
+            class="bg-blue-800 hover:bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold transition">
+            Dashboard
+    </a>
+    <br><br>
+    {% if error %}
+    <div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
+        {{ error }}
+    </div>
+    {% endif %}
 
-<h2 id="timer" class="text-xl font-bold mb-4">0h 0m 0s</h2>
+    <!-- TIMER DISPLAY -->
+    <div class="bg-white rounded-xl shadow p-8 mb-6 text-center">
 
-{% if error %}
-<div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
-    {{ error }}
+        <div id="timer" class="text-6xl font-mono font-bold text-gray-800 mb-2">
+            0h 00m 00s
+        </div>
+
+        <!-- Running indicator -->
+        <div id="timerIndicator" class="hidden mb-4">
+            <span class="inline-flex items-center gap-2 text-green-600 font-semibold">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse inline-block"></span>
+                Timer running
+            </span>
+        </div>
+
+        <div class="flex justify-center gap-4 mt-4">
+            <button onclick="startTimer()"
+                id="startBtn"
+                class="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-semibold text-lg transition disabled:opacity-40 disabled:cursor-not-allowed">
+                 Start
+            </button>
+
+            <button onclick="stopTimer()"
+                id="stopBtn"
+                disabled
+                class="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-lg font-semibold text-lg transition disabled:opacity-40 disabled:cursor-not-allowed">
+                 Stop
+            </button>
+        </div>
+
+    </div>
+
+    <!-- SAVE FORM -->
+    <div class="bg-white rounded-xl shadow p-6">
+
+        <h2 class="text-xl font-bold mb-4">Save Time Entry</h2>
+
+        <form method="POST" id="timeForm" onsubmit="return validateForm()">
+
+            <input type="hidden" name="request_invoice" id="requestInvoice" value="0">
+
+            <div class="mb-4">
+                <label class="block font-semibold mb-2">Hours Worked</label>
+                <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    name="hours"
+                    id="hoursInput"
+                    placeholder="Stop the timer to fill this automatically"
+                    class="border p-3 w-full rounded bg-gray-50"
+                    readonly>
+            </div>
+
+            <div class="mb-6">
+                <label class="block font-semibold mb-2">Description (optional)</label>
+                <textarea
+                    name="description"
+                    placeholder="What did you work on?"
+                    class="border p-3 w-full rounded h-24"></textarea>
+            </div>
+
+            <div class="flex gap-3 flex-wrap">
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition">
+                    Save Time
+                </button>
+
+                <button type="button"
+                    onclick="saveAndRequestInvoice()"
+                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition">
+                    Save &amp; Request Invoice
+                </button>
+
+                <a href="/projects"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition">
+                    Cancel
+                </a>
+
+                
+            </div>
+
+        </form>
+
+    </div>
+
 </div>
-{% endif %}
 
-<button onclick="startTimer()" class="bg-green-500 text-white px-4 py-2 rounded mr-2">
-Start Timer
-</button>
-
-<button onclick="stopAndPromptInvoice()" class="bg-red-500 text-white px-4 py-2 rounded">
-Stop Timer
-</button>
-
-<br><br>
-
-<form method="POST" id="timeForm">
-
-<input type="hidden" id="requestInvoice" name="request_invoice" value="0">
-
-<input id="hoursInput" type="number" step="0.01" name="hours"
-placeholder="Hours will appear automatically"
-class="border p-2 w-full mb-3">
-
-<button class="bg-blue-500 text-white px-4 py-2 rounded">
-Save Time
-</button>
-
-</form>
-
-<br>
-
-<a href="/projects" class="bg-gray-500 text-white px-4 py-2 rounded">
-Back to Projects
-</a>
-
-</div>
-
-<!-- JS file should be loaded at the bottom -->
-<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+<!-- Pass project ID to JS before loading timer.js -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        startTimer();
-    });
+    window.TIMER_PROJECT_ID = "{{ project.id }}";
 
-    function stopAndPromptInvoice() {
-        stopTimer();
-        const hours = document.getElementById("hoursInput").value;
-        if (!hours || parseFloat(hours) <= 0) {
-            return;
+    function validateForm() {
+        const hours = parseFloat(document.getElementById('hoursInput').value);
+        if (!hours || hours <= 0) {
+            alert('Please stop the timer first to record your hours.');
+            return false;
         }
-        if (confirm("Timer stopped. Would you like to request an invoice for this project?")) {
-            document.getElementById("requestInvoice").value = "1";
-            document.getElementById("timeForm").submit();
-        }
+        return true;
+    }
+
+    function saveAndRequestInvoice() {
+        if (!validateForm()) return;
+        document.getElementById('requestInvoice').value = '1';
+        document.getElementById('timeForm').submit();
     }
 </script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 
 </body>
 </html>

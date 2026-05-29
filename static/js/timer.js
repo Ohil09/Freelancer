@@ -1,43 +1,106 @@
+// Timer persistence using localStorage
+// Stores the start timestamp so elapsed time survives page navigation
 
-let seconds = 0;
-let minutes = 0;
-let hours = 0;
-let timer = null;
+const TIMER_KEY = 'freelancer_timer_start';
+const TIMER_PROJECT_KEY = 'freelancer_timer_project';
+
+let timerInterval = null;
+
+// Get current project ID from the page (set by time.html)
+const currentProjectId = window.TIMER_PROJECT_ID || null;
+
+function pad(n) {
+    return String(n).padStart(2, '0');
+}
+
+function getElapsedSeconds() {
+    const startTime = localStorage.getItem(TIMER_KEY);
+    if (!startTime) return 0;
+    return Math.floor((Date.now() - parseInt(startTime)) / 1000);
+}
+
+function updateDisplay() {
+    const elapsed = getElapsedSeconds();
+    const h = Math.floor(elapsed / 3600);
+    const m = Math.floor((elapsed % 3600) / 60);
+    const s = elapsed % 60;
+
+    const display = document.getElementById('timer');
+    if (display) {
+        display.innerHTML = h + 'h ' + pad(m) + 'm ' + pad(s) + 's';
+    }
+}
 
 function startTimer() {
-
-    if (timer !== null) {
+    // If already running, do nothing
+    if (localStorage.getItem(TIMER_KEY)) {
         return;
     }
 
-    timer = setInterval(function () {
+    // Store start time and project ID
+    localStorage.setItem(TIMER_KEY, Date.now().toString());
+    if (currentProjectId) {
+        localStorage.setItem(TIMER_PROJECT_KEY, currentProjectId);
+    }
 
-        seconds++;
-
-        if (seconds == 60) {
-            seconds = 0;
-            minutes++;
-        }
-
-        if (minutes == 60) {
-            minutes = 0;
-            hours++;
-        }
-
-        document.getElementById("timer").innerHTML =
-            hours + "h " + minutes + "m " + seconds + "s";
-
-    }, 1000);
+    beginTicking();
+    updateButtonStates(true);
 }
 
 function stopTimer() {
+    if (!localStorage.getItem(TIMER_KEY)) return;
 
-    clearInterval(timer);
-    timer = null;
+    const elapsed = getElapsedSeconds();
+    const totalHours = (elapsed / 3600).toFixed(2);
 
-    // convert timer to hours
-    let totalHours = hours + (minutes / 60) + (seconds / 3600);
+    // Fill the hours input if it exists on this page
+    const hoursInput = document.getElementById('hoursInput');
+    if (hoursInput) {
+        hoursInput.value = totalHours;
+    }
 
-    // put value in input box
-    document.getElementById("hoursInput").value = totalHours.toFixed(2);
+    // Clear stored timer
+    localStorage.removeItem(TIMER_KEY);
+    localStorage.removeItem(TIMER_PROJECT_KEY);
+
+    // Stop ticking
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    updateButtonStates(false);
 }
+
+function beginTicking() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(updateDisplay, 1000);
+    updateDisplay();
+}
+
+function updateButtonStates(running) {
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const indicator = document.getElementById('timerIndicator');
+
+    if (startBtn) startBtn.disabled = running;
+    if (stopBtn) stopBtn.disabled = !running;
+    if (indicator) {
+        if (running) {
+            indicator.classList.remove('hidden');
+        } else {
+            indicator.classList.add('hidden');
+        }
+    }
+}
+
+// On page load — resume ticking if timer was already running
+document.addEventListener('DOMContentLoaded', function () {
+    const isRunning = !!localStorage.getItem(TIMER_KEY);
+
+    if (isRunning) {
+        beginTicking();
+    }
+
+    updateButtonStates(isRunning);
+});

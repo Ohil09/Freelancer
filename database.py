@@ -145,7 +145,7 @@ def init_database():
 
 def ensure_project_created_at(conn):
     """
-    Ensure projects table has a created_at column for ordering and history.
+    Ensure projects table has all required columns.
     Also ensure users table has email, created_at, and status columns.
     """
     # Check and add missing columns to projects table
@@ -155,7 +155,16 @@ def ensure_project_created_at(conn):
         conn.execute(
             "UPDATE projects SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL"
         )
-    
+    if "deadline" not in columns:
+        conn.execute("ALTER TABLE projects ADD COLUMN deadline TEXT")
+    if "description" not in columns:
+        conn.execute("ALTER TABLE projects ADD COLUMN description TEXT")
+
+    # Time logs table migrations
+    time_columns = {row[1] for row in conn.execute("PRAGMA table_info(time_logs)")}
+    if "description" not in time_columns:
+        conn.execute("ALTER TABLE time_logs ADD COLUMN description TEXT")
+
     # Check and add missing columns to users table
     user_columns = {row[1] for row in conn.execute("PRAGMA table_info(users)")}
     if "email" not in user_columns:
