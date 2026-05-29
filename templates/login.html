@@ -1,33 +1,261 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Login</title>
-<script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Freelancer Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .login-left h1 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .login-left p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .login-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .login-right {
+            flex: 1;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-form h2 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #0f172a;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .form-group input::placeholder {
+            color: #94a3b8;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .error-message {
+            background-color: #fee2e2;
+            color: #dc2626;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc2626;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            background-color: #dcfce7;
+            color: #15803d;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #15803d;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .login-left {
+                padding: 40px 30px;
+            }
+            
+            .login-left h1 {
+                font-size: 28px;
+            }
+            
+            .login-right {
+                padding: 40px 30px;
+            }
+            
+            .login-form h2 {
+                font-size: 24px;
+            }
+            
+            .login-icon {
+                font-size: 48px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-left {
+                padding: 30px 20px;
+            }
+            
+            .login-right {
+                padding: 30px 20px;
+            }
+            
+            .login-left h1 {
+                font-size: 24px;
+                margin-bottom: 15px;
+            }
+            
+            .login-form h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .login-icon {
+                font-size: 40px;
+            }
+        }
+    </style>
 </head>
-
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-
-<form method="POST" class="bg-white p-8 rounded shadow w-80">
-
-<h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
-
-<!-- Username -->
-<input type="text" name="username"
-placeholder="Enter Username"
-class="border p-2 w-full mb-4 rounded" required>
-
-<!-- Password ✅ ADDED -->
-<input type="password" name="password"
-placeholder="Enter Password"
-class="border p-2 w-full mb-6 rounded" required>
-
-<!-- Button -->
-<button type="submit"
-class="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-600">
-Login
-</button>
-
-</form>
-
+<body>
+    <div class="login-container">
+        <!-- Left Side - Branding -->
+        <div class="login-left">
+            <div class="login-icon">📊</div>
+            <h1>Freelancer Pro</h1>
+            <p>Streamline your freelance projects, track time effortlessly, and manage invoices with ease.</p>
+        </div>
+        
+        <!-- Right Side - Login Form -->
+        <div class="login-right">
+            <form method="POST" class="login-form">
+                <h2>Welcome Back</h2>
+                
+                {% if error %}
+                    <div class="error-message">
+                        <strong>⚠️ Error:</strong> {{ error }}
+                    </div>
+                {% endif %}
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
+                        required
+                        autofocus
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    Sign In →
+                </button>
+            </form>
+            
+            <div style="margin-top: 20px; text-align: center; color: #64748b; font-size: 14px;">
+                <p>Demo Credentials:</p>
+                <p><strong>Username:</strong> admin</p>
+                <p><strong>Password:</strong> admin123</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
