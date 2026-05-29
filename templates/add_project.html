@@ -6,7 +6,7 @@
 <div>
     <!-- PAGE HEADER -->
     <div style="margin-bottom: 30px;">
-        <h1 style="margin-bottom: 8px;">➕ Add New Project</h1>
+        <h1 style="margin-bottom: 8px; font-size: 32px; font-weight: 600;">Add New Project</h1>
         <p style="color: #64748b; font-size: 15px;">Create and configure a new project.</p>
     </div>
 
@@ -14,7 +14,7 @@
     <div class="card" style="max-width: 600px;">
         {% if error %}
             <div class="alert alert-danger">
-                <strong>⚠️ Error:</strong> {{ error }}
+                <strong>Error:</strong> {{ error }}
             </div>
         {% endif %}
         
@@ -116,15 +116,15 @@
             
             <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                 <button type="submit" class="btn btn-primary" style="padding: 12px 30px;">
-                    ✓ Save Project
+                    Save Project
                 </button>
                 
                 <a href="/projects" class="btn btn-secondary" style="padding: 12px 30px; text-decoration: none;">
-                    📋 View Projects
+                    View Projects
                 </a>
                 
                 <a href="/" class="btn" style="padding: 12px 30px; text-decoration: none; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white;">
-                    📊 Dashboard
+                    Dashboard
                 </a>
             </div>
         </form>

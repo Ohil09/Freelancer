@@ -6,7 +6,7 @@
 <div>
     <!-- PAGE HEADER -->
     <div style="margin-bottom: 30px;">
-        <h1 style="margin-bottom: 8px;">Admin Dashboard</h1>
+        <h1 style="margin-bottom: 8px; font-size: 32px; font-weight: 600;">Admin Dashboard</h1>
         <p style="color: #64748b; font-size: 15px;">Welcome back! Here's what's happening with your system.</p>
     </div>
 
@@ -14,28 +14,28 @@
     <div class="grid-4" style="margin-bottom: 30px;">
         <!-- TOTAL USERS CARD -->
         <div class="stat-card" style="border-left-color: #4f46e5;">
-            <div class="stat-label">👥 Total Users</div>
+            <div class="stat-label">Total Users</div>
             <div class="stat-value" style="color: #4f46e5;">{{ total_users }}</div>
             <div class="stat-change">Freelancers & Admins</div>
         </div>
 
         <!-- TOTAL PROJECTS CARD -->
         <div class="stat-card" style="border-left-color: #10b981;">
-            <div class="stat-label">📋 Total Projects</div>
+            <div class="stat-label">Total Projects</div>
             <div class="stat-value" style="color: #10b981;">{{ total_projects }}</div>
             <div class="stat-change">All Project Types</div>
         </div>
 
         <!-- ACTIVE PROJECTS CARD -->
         <div class="stat-card" style="border-left-color: #f59e0b;">
-            <div class="stat-label">⚡ Active Projects</div>
+            <div class="stat-label">Active Projects</div>
             <div class="stat-value" style="color: #f59e0b;">{{ active_projects }}</div>
             <div class="stat-change">Currently Running</div>
         </div>
 
         <!-- TOTAL HOURS CARD -->
         <div class="stat-card" style="border-left-color: #a855f7;">
-            <div class="stat-label">⏱ Total Hours</div>
+            <div class="stat-label">Total Hours</div>
             <div class="stat-value" style="color: #a855f7;">{{ "%.1f"|format(total_hours) }}</div>
             <div class="stat-change">Tracked Hours</div>
         </div>
@@ -43,14 +43,14 @@
 
     <!-- TOTAL EARNINGS CARD -->
     <div class="card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; margin-bottom: 30px; border: none;">
-        <div style="font-size: 16px; opacity: 0.9; margin-bottom: 10px;">💰 Total System Earnings</div>
+        <div style="font-size: 16px; opacity: 0.9; margin-bottom: 10px;">Total System Earnings</div>
         <div style="font-size: 36px; font-weight: bold;">₹{{ "%.2f"|format(total_earnings) }}</div>
         <div style="font-size: 13px; opacity: 0.8; margin-top: 5px;">Cumulative earnings from all projects</div>
     </div>
 
     <!-- PROJECTS TABLE -->
     <div class="card" style="padding: 0; overflow: hidden;">
-        <div class="card-header">📊 All Projects Overview</div>
+        <div class="card-header">All Projects Overview</div>
         
         <div style="overflow-x: auto;">
             <table style="margin-top: 0; box-shadow: none;">
@@ -77,11 +77,11 @@
                             <td style="font-weight: 600;">₹{{ project.rate }}</td>
                             <td>
                                 {% if project.status == "Active" %}
-                                    <span class="badge badge-success">✓ Active</span>
+                                    <span class="badge badge-success">Active</span>
                                 {% elif project.status == "Completed" %}
-                                    <span class="badge badge-info">✓ Completed</span>
+                                    <span class="badge badge-info">Completed</span>
                                 {% elif project.status == "Inactive" %}
-                                    <span class="badge" style="background-color: #f3f4f6; color: #64748b;">⊘ Inactive</span>
+                                    <span class="badge" style="background-color: #f3f4f6; color: #64748b;">Inactive</span>
                                 {% else %}
                                     <span class="badge badge-warning">{{ project.status }}</span>
                                 {% endif %}

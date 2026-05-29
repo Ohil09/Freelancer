@@ -6,13 +6,13 @@
 <div>
     <!-- PAGE HEADER -->
     <div style="margin-bottom: 30px;">
-        <h1 style="margin-bottom: 8px;">💳 Payments</h1>
+        <h1 style="margin-bottom: 8px;">Payments</h1>
         <p style="color: #64748b; font-size: 15px;">Track and manage payment records.</p>
     </div>
 
     <!-- PAYMENTS TABLE -->
     <div class="card" style="padding: 0; overflow: hidden;">
-        <div class="card-header">📊 Payment Records</div>
+        <div class="card-header">Payment Records</div>
         
         <div style="overflow-x: auto;">
             <table style="margin-top: 0; box-shadow: none;">
@@ -35,11 +35,11 @@
                             <td style="font-weight: 600; color: #10b981;">₹{{ "%.2f"|format(payment.amount) }}</td>
                             <td>
                                 {% if payment.payment_status == "Completed" %}
-                                    <span class="badge badge-success">✓ Completed</span>
+                                    <span class="badge badge-success">Completed</span>
                                 {% elif payment.payment_status == "Pending" %}
-                                    <span class="badge badge-warning">⏳ Pending</span>
+                                    <span class="badge badge-warning">Pending</span>
                                 {% elif payment.payment_status == "Failed" %}
-                                    <span class="badge badge-danger">✕ Failed</span>
+                                    <span class="badge badge-danger">Failed</span>
                                 {% else %}
                                     <span class="badge badge-info">{{ payment.payment_status }}</span>
                                 {% endif %}
@@ -48,13 +48,13 @@
                             <td>
                                 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                     <a href="/update_payment_status/{{ payment.id }}/Pending" class="btn btn-accent" style="padding: 6px 12px; font-size: 11px;">
-                                        ⏳ Pending
+                                        Pending
                                     </a>
                                     <a href="/update_payment_status/{{ payment.id }}/Completed" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">
-                                        ✓ Complete
+                                        Complete
                                     </a>
                                     <a href="/update_payment_status/{{ payment.id }}/Failed" class="btn btn-danger" style="padding: 6px 12px; font-size: 11px;">
-                                        ✕ Failed
+                                        Failed
                                     </a>
                                 </div>
                             </td>

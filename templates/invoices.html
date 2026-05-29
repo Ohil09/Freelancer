@@ -6,13 +6,13 @@
 <div>
     <!-- PAGE HEADER -->
     <div style="margin-bottom: 30px;">
-        <h1 style="margin-bottom: 8px;">💰 Invoices</h1>
+        <h1 style="margin-bottom: 8px;">Invoices</h1>
         <p style="color: #64748b; font-size: 15px;">Manage and track your invoice requests.</p>
     </div>
 
     <!-- INVOICES TABLE -->
     <div class="card" style="padding: 0; overflow: hidden;">
-        <div class="card-header">📋 Invoice List</div>
+        <div class="card-header">Invoice List</div>
         
         <div style="overflow-x: auto;">
             <table style="margin-top: 0; box-shadow: none;">
@@ -42,11 +42,11 @@
                             <td style="font-weight: 600; color: #10b981;">₹{{ "%.2f"|format(invoice.total_amount) }}</td>
                             <td>
                                 {% if invoice.status == "Pending" %}
-                                    <span class="badge badge-warning">⏳ Pending</span>
+                                    <span class="badge badge-warning">Pending</span>
                                 {% elif invoice.status == "Approved" %}
-                                    <span class="badge badge-success">✓ Approved</span>
+                                    <span class="badge badge-success">Approved</span>
                                 {% elif invoice.status == "Rejected" %}
-                                    <span class="badge badge-danger">✕ Rejected</span>
+                                    <span class="badge badge-danger">Rejected</span>
                                 {% else %}
                                     <span class="badge badge-info">{{ invoice.status }}</span>
                                 {% endif %}
@@ -56,10 +56,10 @@
                                     <div style="display: flex; gap: 6px;">
                                         {% if invoice.status == "Pending" %}
                                             <a href="/approve_invoice/{{ invoice.id }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
-                                                ✓ Approve
+                                                Approve
                                             </a>
                                             <a href="/reject_invoice/{{ invoice.id }}" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">
-                                                ✕ Reject
+                                                Reject
                                             </a>
                                         {% else %}
                                             <span style="color: #94a3b8; font-size: 12px;">—</span>

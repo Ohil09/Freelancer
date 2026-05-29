@@ -6,17 +6,17 @@
 <div>
     <!-- PAGE HEADER -->
     <div style="margin-bottom: 30px;">
-        <h1 style="margin-bottom: 8px;">⏱ Time Tracking</h1>
+        <h1 style="margin-bottom: 8px;">Time Tracking</h1>
         <p style="color: #64748b; font-size: 15px;">Log your work hours for each project.</p>
     </div>
 
     <!-- LOG TIME FORM -->
     <div class="card" style="margin-bottom: 30px;">
-        <h2 class="card-title" style="margin-top: 0;">➕ Log Work Hours</h2>
+        <h2 class="card-title" style="margin-top: 0;">Log Work Hours</h2>
         
         {% if error %}
             <div class="alert alert-danger">
-                <strong>⚠️ Error:</strong> {{ error }}
+                <strong>Error:</strong> {{ error }}
             </div>
         {% endif %}
         
@@ -41,7 +41,7 @@
                     </select>
                     {% if not projects %}
                         <p style="color: #f43f5e; font-size: 13px; margin-top: 8px;">
-                            ⚠️ No projects found. <a href="/add_project" style="text-decoration: underline;">Create a project first</a>.
+                            No projects found. <a href="/add_project" style="text-decoration: underline;">Create a project first</a>.
                         </p>
                     {% endif %}
                 </div>
@@ -77,7 +77,7 @@
             </div>
             
             <button type="submit" class="btn btn-secondary" style="padding: 12px 30px;">
-                ✓ Save Time Log
+                Save Time Log
             </button>
         </form>
     </div>
@@ -85,11 +85,11 @@
     <!-- QUICK START TIMERS -->
     {% if session.get("role") == "freelancer" and projects %}
     <div class="card" style="margin-bottom: 30px;">
-        <h2 class="card-title" style="margin-top: 0;">⚡ Quick Start Timer</h2>
+        <h2 class="card-title" style="margin-top: 0;">Quick Start Timer</h2>
         <div style="display: flex; gap: 12px; flex-wrap: wrap;">
             {% for project in projects %}
                 <a href="/time/{{ project.id }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
-                    ▶ Start {{ project.name }}
+                    Start {{ project.name }}
                 </a>
             {% endfor %}
         </div>
@@ -98,7 +98,7 @@
 
     <!-- RECENT TIME LOGS TABLE -->
     <div class="card" style="padding: 0; overflow: hidden;">
-        <div class="card-header">📊 Recent Time Logs</div>
+        <div class="card-header">Recent Time Logs</div>
         
         <div style="overflow-x: auto;">
             <table style="margin-top: 0; box-shadow: none;">
