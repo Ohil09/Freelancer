@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-8">
+
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Payments</h1>
+        <a href="/" class="bg-blue-500 text-white px-4 py-2 rounded">Dashboard</a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="p-4 text-left">Project</th>
+                    <th class="p-4 text-left">Freelancer</th>
+                    <th class="p-4 text-left">Amount</th>
+                    <th class="p-4 text-left">Status</th>
+                    <th class="p-4 text-left">Payment Date</th>
+                    <th class="p-4 text-left">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr class="border-b">
+                    <td class="p-4">{{ payment.project_name }}</td>
+                    <td class="p-4">{{ payment.username }}</td>
+                    <td class="p-4">₹{{ "%.2f"|format(payment.amount) }}</td>
+                    <td class="p-4">{{ payment.payment_status }}</td>
+                    <td class="p-4">{{ payment.payment_date or "-" }}</td>
+                    <td class="p-4 space-x-2">
+                        <a href="/update_payment_status/{{ payment.id }}/Pending"
+                           class="bg-yellow-500 text-white px-3 py-1 rounded">
+                            Pending
+                        </a>
+                        <a href="/update_payment_status/{{ payment.id }}/Completed"
+                           class="bg-green-500 text-white px-3 py-1 rounded">
+                            Completed
+                        </a>
+                        <a href="/update_payment_status/{{ payment.id }}/Failed"
+                           class="bg-red-500 text-white px-3 py-1 rounded">
+                            Failed
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

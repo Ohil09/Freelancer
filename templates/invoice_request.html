@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Request Invoice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-10">
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
+
+    <h1 class="text-3xl font-bold mb-6">
+        Invoice Request
+    </h1>
+
+    <div class="space-y-3 text-lg mb-6">
+        <p><strong>Project:</strong> {{ project.name }}</p>
+        <p><strong>Type:</strong> {{ project.type }}</p>
+        <p><strong>Rate:</strong> ₹{{ project.rate }}/hour</p>
+        <p><strong>Total Hours:</strong> {{ "%.2f"|format(hours) }}</p>
+        <p class="text-2xl font-bold text-green-600">
+            Total Amount: ₹{{ "%.2f"|format(total) }}
+        </p>
+    </div>
+
+    <form method="POST">
+        <button class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
+            Submit Invoice Request
+        </button>
+        <a href="/projects" class="ml-3 bg-gray-500 text-white px-6 py-3 rounded">
+            Cancel
+        </a>
+    </form>
+
+</div>
+
+</body>
+</html>

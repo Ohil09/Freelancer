@@ -21,6 +21,11 @@
 
     <!-- Form -->
     <div class="bg-white p-6 rounded-xl shadow mb-8">
+        {% if error %}
+            <div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
+                {{ error }}
+            </div>
+        {% endif %}
 
         <form method="POST">
 
@@ -35,7 +40,8 @@
                 <option value="">-- Select Project --</option>
 
                 {% for project in projects %}
-                    <option value="{{ project.id }}">
+                    <option value="{{ project.id }}"
+                        {% if selected_project and selected_project|int == project.id %}selected{% endif %}>
                         {{ project.name }}
                     </option>
                 {% endfor %}
@@ -61,6 +67,11 @@
                 class="border p-3 w-full mb-4 rounded"
                 required
             >
+            
+            <textarea
+                name="description"
+                placeholder="Work description (optional)"
+                class="border p-3 w-full mb-4 rounded h-24"></textarea>
 
             <button type="submit"
                     class="bg-green-500 text-white px-5 py-2 rounded hover:bg-green-600">
@@ -70,6 +81,20 @@
         </form>
 
     </div>
+    
+    {% if role == "freelancer" and projects %}
+    <div class="bg-white p-6 rounded-xl shadow mb-8">
+        <h2 class="text-xl font-bold mb-4">Quick Start Timer</h2>
+        <div class="flex flex-wrap gap-3">
+            {% for project in projects %}
+                <a href="/time/{{ project.id }}"
+                   class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Start {{ project.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Recent Logs -->
     <div class="bg-white rounded-xl shadow overflow-hidden">
@@ -83,15 +108,25 @@
             <thead>
                 <tr class="bg-gray-100">
                     <th class="p-4 text-left">Project</th>
+                    {% if role == "admin" %}
+                        <th class="p-4 text-left">Freelancer</th>
+                    {% endif %}
                     <th class="p-4 text-left">Hours</th>
+                    <th class="p-4 text-left">Date</th>
+                    <th class="p-4 text-left">Description</th>
                 </tr>
             </thead>
 
             <tbody>
-                {% for log in recent %}
+                {% for log in logs %}
                 <tr class="border-b">
-                    <td class="p-4">{{ log.name }}</td>
-                    <td class="p-4">{{ log.hours }}</td>
+                    <td class="p-4">{{ log.project_name }}</td>
+                    {% if role == "admin" %}
+                        <td class="p-4">{{ log.username }}</td>
+                    {% endif %}
+                    <td class="p-4">{{ "%.2f"|format(log.hours) }}</td>
+                    <td class="p-4">{{ log.date }}</td>
+                    <td class="p-4">{{ log.description }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

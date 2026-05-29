@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Activity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-8">
+
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Activity Tracking</h1>
+        <a href="/" class="bg-blue-500 text-white px-4 py-2 rounded">Dashboard</a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="p-4 text-left">Freelancer</th>
+                    <th class="p-4 text-left">Project</th>
+                    <th class="p-4 text-left">Hours</th>
+                    <th class="p-4 text-left">Date</th>
+                    <th class="p-4 text-left">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr class="border-b">
+                    <td class="p-4">{{ log.username }}</td>
+                    <td class="p-4">{{ log.project_name }}</td>
+                    <td class="p-4">{{ "%.2f"|format(log.hours) }}</td>
+                    <td class="p-4">{{ log.date }}</td>
+                    <td class="p-4">{{ log.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

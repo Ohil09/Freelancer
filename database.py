@@ -134,11 +134,26 @@ def init_database():
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )
     """)
+
+    ensure_project_created_at(conn)
     
     conn.commit()
     conn.close()
     
     print("✓ Database initialized successfully!")
+
+
+def ensure_project_created_at(conn):
+    """
+    Ensure projects table has a created_at column for ordering and history.
+    """
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(projects)")}
+    if "created_at" not in columns:
+        # SQLite doesn't allow non-constant defaults when adding a column.
+        conn.execute("ALTER TABLE projects ADD COLUMN created_at TIMESTAMP")
+        conn.execute(
+            "UPDATE projects SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL"
+        )
 
 
 def close_db_connection(conn):

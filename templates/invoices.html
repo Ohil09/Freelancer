@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-8">
+
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Invoices</h1>
+        <a href="/" class="bg-blue-500 text-white px-4 py-2 rounded">Dashboard</a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="p-4 text-left">Project</th>
+                    {% if role == "admin" %}
+                        <th class="p-4 text-left">Freelancer</th>
+                    {% endif %}
+                    <th class="p-4 text-left">Hours</th>
+                    <th class="p-4 text-left">Amount</th>
+                    <th class="p-4 text-left">Status</th>
+                    {% if role == "admin" %}
+                        <th class="p-4 text-left">Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr class="border-b">
+                    <td class="p-4">{{ invoice.project_name }}</td>
+                    {% if role == "admin" %}
+                        <td class="p-4">{{ invoice.username }}</td>
+                    {% endif %}
+                    <td class="p-4">{{ "%.2f"|format(invoice.total_hours) }}</td>
+                    <td class="p-4">₹{{ "%.2f"|format(invoice.total_amount) }}</td>
+                    <td class="p-4">{{ invoice.status }}</td>
+                    {% if role == "admin" %}
+                        <td class="p-4 space-x-2">
+                            {% if invoice.status == "Pending" %}
+                                <a href="/approve_invoice/{{ invoice.id }}"
+                                   class="bg-green-500 text-white px-3 py-1 rounded">
+                                    Approve
+                                </a>
+                                <a href="/reject_invoice/{{ invoice.id }}"
+                                   class="bg-red-500 text-white px-3 py-1 rounded">
+                                    Reject
+                                </a>
+                            {% else %}
+                                <span class="text-gray-500">No actions</span>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

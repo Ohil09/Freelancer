@@ -18,6 +18,12 @@ Manage Users
 Add New User
 </h2>
 
+{% if error %}
+<div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
+    {{ error }}
+</div>
+{% endif %}
+
 <form method="POST">
 
 <div class="grid grid-cols-3 gap-4">
@@ -36,23 +42,32 @@ placeholder="Password"
 class="border p-3 rounded"
 required>
 
+<input
+type="email"
+name="email"
+placeholder="Email (optional)"
+class="border p-3 rounded">
+
+</div>
+
+<div class="mt-4">
 <select
 name="role"
 class="border p-3 rounded">
 
-<option value="user">User</option>
+<option value="freelancer">Freelancer</option>
 <option value="admin">Admin</option>
 
 </select>
 
-</div>
-
 <button
-class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
+class="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
 
 Add User
 
 </button>
+
+</div>
 
 </form>
 

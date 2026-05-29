@@ -15,9 +15,8 @@ import os
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-change-in-production")
 
-# Initialize database on startup
-if not os.path.exists("database.db"):
-    init_database()
+# Initialize database on startup (idempotent)
+init_database()
 
 
 # ==================== DECORATORS ====================
@@ -70,7 +69,7 @@ def login():
         
         conn = get_db_connection()
         user = conn.execute(
-            "SELECT * FROM users WHERE username=? AND ******",
+            "SELECT * FROM users WHERE username=? AND password=?",
             (username, password)
         ).fetchone()
         close_db_connection(conn)
@@ -202,6 +201,7 @@ def freelancer_dashboard():
 def manage_users():
     """Manage system users (admin only)"""
     conn = get_db_connection()
+    error = None
     
     if request.method == "POST":
         username = request.form.get("username")
@@ -211,30 +211,33 @@ def manage_users():
         
         # Validate input
         if not username or not password:
-            return render_template("manage_users.html", error="Username and password required")
-        
-        # Check if user already exists
-        existing = conn.execute(
-            "SELECT * FROM users WHERE username=?",
-            (username,)
-        ).fetchone()
-        
-        if existing:
-            users = conn.execute("SELECT * FROM users").fetchall()
-            close_db_connection(conn)
-            return render_template("manage_users.html", users=users, error="Username already exists")
-        
-        # Insert new user
-        conn.execute(
-            "INSERT INTO users(username, password, role, email) VALUES (?, ?, ?, ?)",
-            (username, password, role, email)
-        )
-        conn.commit()
+            error = "Username and password required"
+        else:
+            try:
+                # Check if user already exists
+                existing = conn.execute(
+                    "SELECT * FROM users WHERE username=?",
+                    (username,)
+                ).fetchone()
+                
+                if existing:
+                    error = "Username already exists"
+                else:
+                    # Insert new user
+                    conn.execute(
+                        "INSERT INTO users(username, password, role, email) VALUES (?, ?, ?, ?)",
+                        (username, password, role, email)
+                    )
+                    conn.commit()
+                    error = None
+            except Exception as e:
+                error = f"Error adding user: {str(e)}"
+                conn.rollback()
     
     users = conn.execute("SELECT * FROM users").fetchall()
     close_db_connection(conn)
     
-    return render_template("manage_users.html", users=users)
+    return render_template("manage_users.html", users=users, error=error)
 
 
 @app.route("/delete_user/<int:user_id>")
@@ -334,8 +337,10 @@ def add_project():
         
         # Insert project
         conn.execute(
-            """INSERT INTO projects(name, type, rate, status, user_id, deadline, description)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            """INSERT INTO projects(
+                    name, type, rate, status, user_id, deadline, description, created_at
+                )
+               VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)""",
             (name, project_type, rate, status, user_id, deadline, description)
         )
         conn.commit()
@@ -422,6 +427,7 @@ def time_tracking():
     user_id = session["user_id"]
     role = session["role"]
     conn = get_db_connection()
+    error = None
     
     if request.method == "POST":
         project_id = request.form.get("project_id")
@@ -429,31 +435,25 @@ def time_tracking():
         description = request.form.get("description", "")
         
         if not project_id or not hours:
-            return render_template(
-                "time_tracking.html",
-                error="Project and hours are required"
-            )
+            error = "Project and hours are required"
         
-        try:
-            hours = float(hours)
-            if hours <= 0:
-                return render_template(
-                    "time_tracking.html",
-                    error="Hours must be greater than 0"
-                )
-        except ValueError:
-            return render_template(
-                "time_tracking.html",
-                error="Invalid hours value"
-            )
+        if not error:
+            try:
+                hours = float(hours)
+                if hours <= 0:
+                    error = "Hours must be greater than 0"
+            except ValueError:
+                error = "Invalid hours value"
         
-        conn.execute(
-            """INSERT INTO time_logs(project_id, user_id, hours, description)
-               VALUES (?, ?, ?, ?)""",
-            (project_id, user_id, hours, description)
-        )
-        conn.commit()
-        return redirect("/time_tracking")
+        if not error:
+            conn.execute(
+                """INSERT INTO time_logs(project_id, user_id, hours, description)
+                   VALUES (?, ?, ?, ?)""",
+                (project_id, user_id, hours, description)
+            )
+            conn.commit()
+            close_db_connection(conn)
+            return redirect("/time_tracking")
     
     # Get projects
     if role == "admin":
@@ -484,8 +484,60 @@ def time_tracking():
         "time_tracking.html",
         projects=projects,
         logs=logs,
-        role=role
+        role=role,
+        error=error,
+        selected_project=request.form.get("project_id") if request.method == "POST" else request.args.get("project_id")
     )
+
+
+@app.route("/time/<int:project_id>", methods=["GET", "POST"])
+@freelancer_required
+def project_timer(project_id):
+    """Auto time tracking for a single project"""
+    user_id = session["user_id"]
+    conn = get_db_connection()
+    project = conn.execute(
+        "SELECT * FROM projects WHERE id=? AND user_id=?",
+        (project_id, user_id)
+    ).fetchone()
+    
+    if not project:
+        close_db_connection(conn)
+        return "Project not found", 404
+    
+    if request.method == "POST":
+        hours = request.form.get("hours")
+        request_invoice = request.form.get("request_invoice")
+        description = request.form.get("description", "Timer entry")
+        
+        try:
+            hours_value = float(hours or 0)
+        except ValueError:
+            hours_value = 0
+        
+        if hours_value <= 0:
+            close_db_connection(conn)
+            return render_template(
+                "time.html",
+                project=project,
+                error="Please stop the timer to calculate hours before saving."
+            )
+        
+        conn.execute(
+            """INSERT INTO time_logs(project_id, user_id, hours, description)
+               VALUES (?, ?, ?, ?)""",
+            (project_id, user_id, hours_value, description)
+        )
+        conn.commit()
+        close_db_connection(conn)
+        
+        if request_invoice == "1":
+            return redirect(f"/invoice_request/{project_id}")
+        
+        return redirect("/time_tracking")
+    
+    close_db_connection(conn)
+    return render_template("time.html", project=project)
 
 
 # ==================== PROJECT PROGRESS ROUTES ====================
@@ -601,16 +653,15 @@ def invoice_request(project_id):
         close_db_connection(conn)
         return "Project not found", 404
     
+    total_hours_result = conn.execute(
+        "SELECT IFNULL(SUM(hours), 0) as total FROM time_logs WHERE project_id=? AND user_id=?",
+        (project_id, user_id)
+    ).fetchone()
+    
+    total_hours = float(total_hours_result["total"] or 0)
+    total_amount = total_hours * float(project["rate"])
+    
     if request.method == "POST":
-        # Calculate totals
-        total_hours_result = conn.execute(
-            "SELECT IFNULL(SUM(hours), 0) as total FROM time_logs WHERE project_id=? AND user_id=?",
-            (project_id, user_id)
-        ).fetchone()
-        
-        total_hours = float(total_hours_result["total"] or 0)
-        total_amount = total_hours * float(project["rate"])
-        
         # Create invoice request
         conn.execute(
             """INSERT INTO invoice_requests
@@ -624,7 +675,12 @@ def invoice_request(project_id):
         return redirect("/invoices")
     
     close_db_connection(conn)
-    return render_template("invoice_request.html", project=project)
+    return render_template(
+        "invoice_request.html",
+        project=project,
+        hours=total_hours,
+        total=total_amount
+    )
 
 
 @app.route("/invoices")
@@ -752,6 +808,48 @@ def update_payment_status(payment_id, status):
 
 
 # ==================== ADMIN MONITORING ROUTES ====================
+
+@app.route("/admin/users")
+@admin_required
+def admin_users():
+    """Shortcut to manage users"""
+    return redirect("/manage_users")
+
+@app.route("/admin/progress")
+@admin_required
+def admin_progress():
+    """View progress updates"""
+    conn = get_db_connection()
+    
+    updates = conn.execute("""
+        SELECT progress_updates.*, projects.name as project_name, users.username
+        FROM progress_updates
+        JOIN projects ON progress_updates.project_id = projects.id
+        JOIN users ON progress_updates.user_id = users.id
+        ORDER BY progress_updates.update_date DESC
+    """).fetchall()
+    
+    close_db_connection(conn)
+    
+    return render_template("admin_progress.html", updates=updates)
+
+@app.route("/admin/project_monitor")
+@admin_required
+def admin_project_monitor():
+    """Monitor project progress updates"""
+    conn = get_db_connection()
+    
+    updates = conn.execute("""
+        SELECT progress_updates.*, projects.name as project_name, users.username
+        FROM progress_updates
+        JOIN projects ON progress_updates.project_id = projects.id
+        JOIN users ON progress_updates.user_id = users.id
+        ORDER BY progress_updates.update_date DESC
+    """).fetchall()
+    
+    close_db_connection(conn)
+    
+    return render_template("admin_project_monitor.html", updates=updates)
 
 @app.route("/admin/activity")
 @admin_required

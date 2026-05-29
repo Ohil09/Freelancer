@@ -289,7 +289,7 @@ close_db_connection(conn)
 # Example: Insert a new project
 conn = get_db_connection()
 conn.execute(
-    "INSERT INTO projects(name, type, rate, status, user_id) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO projects(name, type, rate, status, user_id, created_at) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
     ("Project Name", "Web Development", 50.0, "Active", 1)
 )
 conn.commit()

@@ -19,17 +19,25 @@ Track Time for {{project.name}}
 
 <h2 id="timer" class="text-xl font-bold mb-4">0h 0m 0s</h2>
 
+{% if error %}
+<div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
+    {{ error }}
+</div>
+{% endif %}
+
 <button onclick="startTimer()" class="bg-green-500 text-white px-4 py-2 rounded mr-2">
 Start Timer
 </button>
 
-<button onclick="stopTimer()" class="bg-red-500 text-white px-4 py-2 rounded">
+<button onclick="stopAndPromptInvoice()" class="bg-red-500 text-white px-4 py-2 rounded">
 Stop Timer
 </button>
 
 <br><br>
 
-<form method="POST">
+<form method="POST" id="timeForm">
+
+<input type="hidden" id="requestInvoice" name="request_invoice" value="0">
 
 <input id="hoursInput" type="number" step="0.01" name="hours"
 placeholder="Hours will appear automatically"
@@ -51,6 +59,23 @@ Back to Projects
 
 <!-- JS file should be loaded at the bottom -->
 <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        startTimer();
+    });
+
+    function stopAndPromptInvoice() {
+        stopTimer();
+        const hours = document.getElementById("hoursInput").value;
+        if (!hours || parseFloat(hours) <= 0) {
+            return;
+        }
+        if (confirm("Timer stopped. Would you like to request an invoice for this project?")) {
+            document.getElementById("requestInvoice").value = "1";
+            document.getElementById("timeForm").submit();
+        }
+    }
+</script>
 
 </body>
 </html>
