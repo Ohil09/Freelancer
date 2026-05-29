@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Manage Users</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-8">
+
+<h1 class="text-3xl font-bold mb-6 text-blue-700">
+Manage Users
+</h1>
+
+<!-- ADD USER FORM -->
+<div class="bg-white p-6 rounded-xl shadow mb-8">
+
+<h2 class="text-xl font-bold mb-4">
+Add New User
+</h2>
+
+<form method="POST">
+
+<div class="grid grid-cols-3 gap-4">
+
+<input
+type="text"
+name="username"
+placeholder="Username"
+class="border p-3 rounded"
+required>
+
+<input
+type="password"
+name="password"
+placeholder="Password"
+class="border p-3 rounded"
+required>
+
+<select
+name="role"
+class="border p-3 rounded">
+
+<option value="user">User</option>
+<option value="admin">Admin</option>
+
+</select>
+
+</div>
+
+<button
+class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
+
+Add User
+
+</button>
+
+</form>
+
+</div>
+
+<!-- USERS TABLE -->
+<div class="bg-white rounded-xl shadow overflow-hidden">
+
+<table class="w-full">
+
+<tr class="bg-blue-600 text-white">
+
+<th class="p-4 text-left">ID</th>
+<th class="p-4 text-left">Username</th>
+<th class="p-4 text-left">Role</th>
+<th class="p-4 text-left">Action</th>
+
+</tr>
+
+{% for user in users %}
+
+<tr class="border-b">
+
+<td class="p-4">{{ user.id }}</td>
+<td class="p-4">{{ user.username }}</td>
+<td class="p-4">{{ user.role }}</td>
+
+<td class="p-4">
+
+{% if user.role != "admin" %}
+
+<a href="/delete_user/{{ user.id }}"
+class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+
+Delete
+
+</a>
+
+{% else %}
+
+<span class="text-gray-500 font-semibold">
+Protected
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</body>
+</html>

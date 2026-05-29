@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Project Progress</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="p-8">
+
+<h1 class="text-3xl font-bold mb-6">
+Project Progress Updates
+</h1>
+
+<form method="POST" class="bg-white p-6 rounded shadow mb-8">
+
+<select name="project_id"
+class="border p-2 w-full mb-4">
+
+{% for project in projects %}
+<option value="{{ project.id }}">
+{{ project.name }}
+</option>
+{% endfor %}
+
+</select>
+
+<input type="number"
+name="progress"
+placeholder="Completion Percentage"
+class="border p-2 w-full mb-4">
+
+<textarea
+name="completed_tasks"
+placeholder="Completed Tasks"
+class="border p-2 w-full mb-4"></textarea>
+
+<textarea
+name="pending_tasks"
+placeholder="Pending Tasks"
+class="border p-2 w-full mb-4"></textarea>
+
+<textarea
+name="remarks"
+placeholder="Remarks"
+class="border p-2 w-full mb-4"></textarea>
+
+<button class="bg-blue-500 text-white px-6 py-2 rounded">
+Submit Progress
+</button>
+
+</form>
+
+<table class="w-full bg-white shadow rounded">
+
+<tr class="bg-blue-500 text-white">
+
+<th class="p-3">Project</th>
+<th class="p-3">Progress</th>
+<th class="p-3">Completed</th>
+<th class="p-3">Pending</th>
+
+</tr>
+
+{% for u in updates %}
+
+<tr class="border-b">
+
+<td class="p-3">{{ u.name }}</td>
+<td class="p-3">{{ u.progress }}%</td>
+<td class="p-3">{{ u.completed_tasks }}</td>
+<td class="p-3">{{ u.pending_tasks }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</body>
+</html>

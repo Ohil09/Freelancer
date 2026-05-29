@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Projects</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gray-100">
+
+<div class="p-8">
+
+<h1 class="text-2xl font-bold mb-6">Projects</h1>
+
+<a href="{{ url_for('add_project') }}"
+class="bg-green-500 text-white px-4 py-2 rounded">
+Add Project
+</a>
+
+<table class="mt-6 w-full bg-white shadow border">
+
+<thead>
+
+<tr class="bg-gray-200">
+
+<th class="p-3 border">Name</th>
+<th class="p-3 border">Type</th>
+<th class="p-3 border">Rate</th>
+<th class="p-3 border">Status</th>
+<th class="p-3 border">Hours</th>
+<th class="p-3 border">Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for project in projects %}
+
+<tr class="text-center">
+
+<td class="p-2 border">{{ project.name }}</td>
+<td class="p-2 border">{{ project.type }}</td>
+<td class="p-2 border">${{ project.rate }}</td>
+<td class="p-2 border">{{ project.status }}</td>
+<td class="p-2 border">{{ project.total_hours }}</td>
+
+<td class="p-2 border space-x-2">
+
+<a href="/time_tracking?project_id={{ project.id }}"
+class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+    Track Time
+</a>
+
+<a href="{{ url_for('invoice', project_id=project.id) }}"
+class="bg-green-500 text-white px-3 py-1 rounded">
+Invoice
+</a>
+
+<a href="{{ url_for('edit_project', id=project.id) }}"
+class="bg-yellow-500 text-white px-3 py-1 rounded">
+Edit
+</a>
+
+<a href="{{ url_for('delete_project', id=project.id) }}"
+class="bg-red-500 text-white px-3 py-1 rounded">
+Delete
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</body>
+</html>

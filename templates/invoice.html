@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-10">
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
+
+    <h1 class="text-3xl font-bold mb-6">
+        Invoice
+    </h1>
+
+    <div class="space-y-4 text-lg">
+
+        <p>
+            <strong>Project:</strong>
+            {{ project.name }}
+        </p>
+
+        <p>
+            <strong>Type:</strong>
+            {{ project.type }}
+        </p>
+
+        <p>
+            <strong>Rate:</strong>
+            ${{ project.rate }}/hour
+        </p>
+
+        <p>
+            <strong>Total Hours:</strong>
+            {{ hours }}
+        </p>
+
+        <p class="text-2xl font-bold text-green-600">
+            Total Amount: ${{ total }}
+        </p>
+
+    </div>
+
+    <a href="/projects"
+       class="mt-6 inline-block bg-blue-500 text-white px-5 py-2 rounded">
+        Back
+    </a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="p-8">
+
+<h1 class="text-3xl font-bold mb-6">Freelancer Dashboard</h1>
+{% if session["role"] == "admin" %}
+
+<div class="flex gap-4 mb-6">
+
+    <a href="/admin"
+       class="bg-blue-700 hover:bg-blue-600 text-white px-5 py-3 rounded-lg font-semibold">
+        Admin Panel
+    </a>
+
+    <a href="/manage_users"
+       class="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-lg font-semibold">
+        Manage Users
+    </a>
+
+<a href="/time_tracking"
+class="bg-purple-500 text-white px-4 py-2 rounded">
+    Track Project Time
+</a>
+
+</div>
+
+{% endif %}
+<!-- DASHBOARD CARDS -->
+<div class="grid grid-cols-4 gap-6 mb-8">
+
+<div class="bg-white p-6 rounded shadow">
+<h2 class="text-gray-500">Total Projects</h2>
+<p class="text-3xl font-bold">{{ total_projects }}</p>
+</div>
+
+<div class="bg-white p-6 rounded shadow">
+<h2 class="text-gray-500">Active Projects</h2>
+<p class="text-3xl font-bold">{{ active_projects }}</p>
+</div>
+
+<div class="bg-white p-6 rounded shadow">
+<h2 class="text-gray-500">Total Hours</h2>
+<p class="text-3xl font-bold">{{ "%.2f"|format(total_hours) }}</p>
+</div>
+
+<div class="bg-white p-6 rounded shadow">
+<h2 class="text-gray-500">Total Earnings</h2>
+<p class="text-3xl font-bold text-green-600">
+₹{{ "%.2f"|format(total_earnings) }}
+</p>
+</div>
+
+</div>
+<div class="bg-green-500 text-white p-4 rounded mb-6 text-xl font-bold">
+Total Earnings: ${{ total_earnings }}
+</div>
+<a href="/projects" class="bg-blue-500 text-white px-4 py-2 rounded">
+View Projects
+</a>
+
+<a href="/progress_update"
+class="bg-green-600 text-white px-4 py-2 rounded ml-2">
+Progress Updates
+</a>
+
+{% if session["role"] == "admin" %}
+
+<a href="/admin/progress"
+class="bg-purple-600 text-white px-4 py-2 rounded ml-2">
+Monitor Progress
+</a>
+
+{% endif %}
+<table class="mt-6 w-full bg-white shadow">
+
+<tr class="bg-gray-200">
+<th class="p-2">Project Name</th>
+<th class="p-2">Type</th>
+<th class="p-2">Rate</th>
+<th class="p-2">Status</th>
+</tr>
+
+{% for project in projects %}
+<tr>
+<td class="p-2">{{project.name}}</td>
+<td class="p-2">{{project.type}}</td>
+<td class="p-2">{{project.rate}}</td>
+<td class="p-2">{{project.status}}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+</body>
+</html>

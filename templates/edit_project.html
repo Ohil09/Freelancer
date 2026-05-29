@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-10">
+
+<div class="max-w-lg mx-auto bg-white p-8 rounded shadow">
+
+    <h1 class="text-3xl font-bold mb-6">
+        Edit Project
+    </h1>
+
+    <form method="POST">
+
+        <input
+            type="text"
+            name="name"
+            value="{{ project.name }}"
+            class="border p-2 w-full mb-4 rounded"
+            required
+        >
+
+        <input
+            type="text"
+            name="type"
+            value="{{ project.type }}"
+            class="border p-2 w-full mb-4 rounded"
+            required
+        >
+
+        <input
+            type="number"
+            name="rate"
+            value="{{ project.rate }}"
+            class="border p-2 w-full mb-4 rounded"
+            required
+        >
+
+        <select
+            name="status"
+            class="border p-2 w-full mb-4 rounded"
+        >
+            <option value="Active"
+                {% if project.status == "Active" %}selected{% endif %}>
+                Active
+            </option>
+
+            <option value="Completed"
+                {% if project.status == "Completed" %}selected{% endif %}>
+                Completed
+            </option>
+        </select>
+
+        <button
+            class="bg-blue-500 text-white px-5 py-2 rounded w-full"
+        >
+            Update Project
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Project</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="p-8">
+
+<h1 class="text-2xl font-bold mb-6">Add Project</h1>
+
+<form method="POST">
+
+<input name="name" placeholder="Project Name"
+class="border p-2 w-full mb-3">
+
+<input name="type" placeholder="Project Type"
+class="border p-2 w-full mb-3">
+
+<input
+    type="number"
+    name="rate"
+    placeholder="Hourly Rate"
+    class="border p-2 w-full mb-3"
+    required
+>
+<select name="status" class="border p-2 w-full mb-3">
+<option>Active</option>
+<option>Invoiced</option>
+<option>Completed</option>
+</select>
+{% if session["role"] == "admin" %}
+
+<select name="user_id"
+class="border p-2 w-full mb-4 rounded"
+required>
+
+<option value="">Select User</option>
+
+{% for user in users %}
+
+<option value="{{ user.id }}">
+    {{ user.username }}
+</option>
+
+{% endfor %}
+
+</select>
+
+{% endif %}
+<button class="bg-blue-500 text-white px-4 py-2 rounded">
+Save Project
+</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

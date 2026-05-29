@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Time Tracking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+<div class="p-8 max-w-5xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Time Tracking</h1>
+
+        <a href="/"
+           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Dashboard
+        </a>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white p-6 rounded-xl shadow mb-8">
+
+        <form method="POST">
+
+            <label class="block mb-2 font-semibold">
+                Select Project
+            </label>
+
+            <select name="project_id"
+                    class="border p-3 w-full mb-4 rounded"
+                    required>
+
+                <option value="">-- Select Project --</option>
+
+                {% for project in projects %}
+                    <option value="{{ project.id }}">
+                        {{ project.name }}
+                    </option>
+                {% endfor %}
+
+            </select>
+
+            {% if not projects %}
+                <p class="text-red-500 mb-4">
+                    No projects found. Please create a project first.
+                </p>
+            {% endif %}
+
+            <label class="block mb-2 font-semibold">
+                Hours Worked
+            </label>
+
+            <input
+                type="number"
+                step="0.1"
+                min="0"
+                name="hours"
+                placeholder="Enter Hours"
+                class="border p-3 w-full mb-4 rounded"
+                required
+            >
+
+            <button type="submit"
+                    class="bg-green-500 text-white px-5 py-2 rounded hover:bg-green-600">
+                Save Time
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- Recent Logs -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+
+        <div class="bg-blue-600 text-white p-4 text-xl font-bold">
+            Recent Time Logs
+        </div>
+
+        <table class="w-full">
+
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="p-4 text-left">Project</th>
+                    <th class="p-4 text-left">Hours</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for log in recent %}
+                <tr class="border-b">
+                    <td class="p-4">{{ log.name }}</td>
+                    <td class="p-4">{{ log.hours }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

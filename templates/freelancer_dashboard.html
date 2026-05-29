@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Freelancer Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+<!-- NAVBAR -->
+<div class="bg-blue-600 text-white p-5 flex justify-between items-center shadow-lg">
+
+    <h1 class="text-3xl font-bold">
+        Freelancer Dashboard
+    </h1>
+
+    <div class="space-x-3">
+
+        <a href="/projects"
+        class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200">
+            My Projects
+        </a>
+
+        <a href="/add_project"
+        class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+            Add Project
+        </a>
+
+        <a href="/time_tracking"
+        class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+            Time Tracking
+        </a>
+
+        <a href="/logout"
+        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="p-8">
+
+    <!-- STATS -->
+    <div class="grid grid-cols-4 gap-6 mb-8">
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-gray-500 text-lg">
+                Total Projects
+            </h2>
+
+            <p class="text-4xl font-bold text-blue-600 mt-2">
+                {{ total_projects }}
+            </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-gray-500 text-lg">
+                Active Projects
+            </h2>
+
+            <p class="text-4xl font-bold text-green-600 mt-2">
+                {{ active_projects }}
+            </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-gray-500 text-lg">
+                Total Hours
+            </h2>
+
+            <p class="text-4xl font-bold text-yellow-500 mt-2">
+                {{ "%.2f"|format(total_hours) }}
+            </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-gray-500 text-lg">
+                Total Earnings
+            </h2>
+
+            <p class="text-4xl font-bold text-purple-600 mt-2">
+                ₹{{ "%.2f"|format(total_earnings) }}
+            </p>
+        </div>
+
+    </div>
+
+    <!-- PROJECT TABLE -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+
+        <div class="bg-blue-600 text-white p-4 text-xl font-bold">
+            My Projects
+        </div>
+
+        <table class="w-full">
+
+            <tr class="bg-gray-100 text-left">
+
+                <th class="p-4">Project Name</th>
+                <th class="p-4">Type</th>
+                <th class="p-4">Rate</th>
+                <th class="p-4">Status</th>
+                <th class="p-4">Hours</th>
+                <th class="p-4">Actions</th>
+
+            </tr>
+
+            {% for project in projects %}
+
+            <tr class="border-b hover:bg-gray-50">
+
+                <td class="p-4">{{ project.name }}</td>
+
+                <td class="p-4">{{ project.type }}</td>
+
+                <td class="p-4">
+                    ₹{{ project.rate }}
+                </td>
+
+                <td class="p-4">
+                    {{ project.status }}
+                </td>
+
+                <td class="p-4">
+                    {{ "%.2f"|format(project.total_hours) }}
+                </td>
+
+                <td class="p-4 space-x-2">
+
+                    <a href="/edit_project/{{ project.id }}"
+                    class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
+                        Edit
+                    </a>
+
+                    <a href="/delete_project/{{ project.id }}"
+                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                        Delete
+                    </a>
+
+                    <a href="/invoice/{{ project.id }}"
+                    class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                        Invoice
+                    </a>
+<a href="/project_progress"
+class="bg-purple-500 text-white px-5 py-2 rounded">
+Project Progress
+</a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

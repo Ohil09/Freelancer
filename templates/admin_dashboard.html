@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="p-8">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-4xl font-bold mb-6 text-gray-800">
+        Admin Dashboard
+    </h1>
+
+    <!-- TOP BUTTONS -->
+    <div class="flex flex-wrap gap-4 mb-8">
+
+        <a href="/projects"
+        class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-lg shadow">
+            View Projects
+        </a>
+
+        <a href="/manage_users"
+        class="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-lg shadow">
+            Manage Users
+        </a>
+
+        <a href="/admin/project_monitor"
+        class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-3 rounded-lg shadow">
+            Project Monitoring
+        </a>
+
+        <a href="/time_tracking"
+        class="bg-purple-500 hover:bg-purple-600 text-white px-5 py-3 rounded-lg shadow">
+            Time Tracking
+        </a>
+
+        <a href="/logout"
+        class="bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded-lg shadow">
+            Logout
+        </a>
+
+    </div>
+
+    <!-- DASHBOARD CARDS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+
+        <!-- TOTAL USERS -->
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-gray-500 text-lg">
+                Total Users
+            </h2>
+
+            <p class="text-4xl font-bold text-blue-600 mt-3">
+                {{ total_users }}
+            </p>
+        </div>
+
+        <!-- TOTAL PROJECTS -->
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-gray-500 text-lg">
+                Total Projects
+            </h2>
+
+            <p class="text-4xl font-bold text-green-600 mt-3">
+                {{ total_projects }}
+            </p>
+        </div>
+
+        <!-- ACTIVE PROJECTS -->
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-gray-500 text-lg">
+                Active Projects
+            </h2>
+
+            <p class="text-4xl font-bold text-yellow-500 mt-3">
+                {{ active_projects }}
+            </p>
+        </div>
+
+        <!-- TOTAL HOURS -->
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-gray-500 text-lg">
+                Total Hours
+            </h2>
+
+            <p class="text-4xl font-bold text-purple-600 mt-3">
+                {{ total_hours }}
+            </p>
+        </div>
+
+    </div>
+
+    <!-- TOTAL EARNINGS -->
+    <div class="bg-green-500 text-white p-6 rounded-xl shadow mb-10">
+
+        <h2 class="text-2xl font-bold">
+            Total Earnings
+        </h2>
+
+        <p class="text-4xl font-bold mt-3">
+            ₹{{ total_earnings }}
+        </p>
+
+    </div>
+
+    <!-- PROJECT TABLE -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+
+        <div class="bg-blue-500 text-white p-4">
+            <h2 class="text-2xl font-bold">
+                All Projects
+            </h2>
+        </div>
+
+        <table class="w-full">
+
+            <tr class="bg-gray-200 text-gray-700">
+
+                <th class="p-4 text-left">Project Name</th>
+                <th class="p-4 text-left">Type</th>
+                <th class="p-4 text-left">Rate</th>
+                <th class="p-4 text-left">Status</th>
+                <th class="p-4 text-left">Hours</th>
+
+            </tr>
+
+            {% for project in projects %}
+
+            <tr class="border-b hover:bg-gray-50">
+
+                <td class="p-4">
+                    {{ project.name }}
+                </td>
+
+                <td class="p-4">
+                    {{ project.type }}
+                </td>
+
+                <td class="p-4">
+                    ₹{{ project.rate }}
+                </td>
+
+                <td class="p-4">
+
+                    {% if project.status == "Active" %}
+
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                        Active
+                    </span>
+
+                    {% elif project.status == "Completed" %}
+
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                        Completed
+                    </span>
+
+                    {% else %}
+
+                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
+                        Invoiced
+                    </span>
+
+                    {% endif %}
+
+                </td>
+
+                <td class="p-4">
+                    {{ project.total_hours }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>
