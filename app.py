@@ -743,82 +743,129 @@ def invoices():
 
 
 @app.route("/approve_invoice/<int:invoice_id>")
-@admin_required
+@login_required
 def approve_invoice(invoice_id):
-    """Approve invoice (admin only)"""
+    """Approve invoice (admin or invoice owner)"""
+    user_id = session.get("user_id")
+    role = session.get("role")
     conn = get_db_connection()
-    
+
     invoice = conn.execute(
         "SELECT * FROM invoice_requests WHERE id=?",
         (invoice_id,)
     ).fetchone()
-    
+
     if invoice:
+        # Only admin or the invoice owner can approve
+        if role != "admin" and invoice["user_id"] != user_id:
+            close_db_connection(conn)
+            return "Access Denied", 403
+
         # Update invoice status
         conn.execute(
             "UPDATE invoice_requests SET status='Approved' WHERE id=?",
             (invoice_id,)
         )
-        
+
         # Create payment record
         conn.execute(
             """INSERT INTO payments(invoice_id, project_id, user_id, amount, payment_status)
                VALUES (?, ?, ?, ?, 'Pending')""",
             (invoice_id, invoice["project_id"], invoice["user_id"], invoice["total_amount"])
         )
-        
+
         conn.commit()
-    
+
     close_db_connection(conn)
     return redirect("/invoices")
 
 
 @app.route("/reject_invoice/<int:invoice_id>")
-@admin_required
+@login_required
 def reject_invoice(invoice_id):
-    """Reject invoice (admin only)"""
+    """Reject invoice (admin or invoice owner)"""
+    user_id = session.get("user_id")
+    role = session.get("role")
     conn = get_db_connection()
-    
+
+    invoice = conn.execute(
+        "SELECT * FROM invoice_requests WHERE id=?",
+        (invoice_id,)
+    ).fetchone()
+
+    if not invoice:
+        close_db_connection(conn)
+        return "Invoice not found", 404
+
+    if role != "admin" and invoice["user_id"] != user_id:
+        close_db_connection(conn)
+        return "Access Denied", 403
+
     conn.execute(
         "UPDATE invoice_requests SET status='Rejected' WHERE id=?",
         (invoice_id,)
     )
     conn.commit()
     close_db_connection(conn)
-    
+
     return redirect("/invoices")
 
 
 # ==================== PAYMENT MANAGEMENT ROUTES ====================
 
 @app.route("/payments")
-@admin_required
+@login_required
 def payments():
-    """View payment records"""
+    """View payment records. Admin sees all; users see their own payments."""
+    user_id = session.get("user_id")
+    role = session.get("role")
     conn = get_db_connection()
-    
-    payments = conn.execute("""
-        SELECT payments.*, users.username, projects.name as project_name
-        FROM payments
-        JOIN users ON payments.user_id = users.id
-        JOIN projects ON payments.project_id = projects.id
-        ORDER BY payments.created_at DESC
-    """).fetchall()
-    
+
+    if role == "admin":
+        payments = conn.execute("""
+            SELECT payments.*, users.username, projects.name as project_name
+            FROM payments
+            JOIN users ON payments.user_id = users.id
+            JOIN projects ON payments.project_id = projects.id
+            ORDER BY payments.created_at DESC
+        """).fetchall()
+    else:
+        payments = conn.execute("""
+            SELECT payments.*, users.username, projects.name as project_name
+            FROM payments
+            JOIN users ON payments.user_id = users.id
+            JOIN projects ON payments.project_id = projects.id
+            WHERE payments.user_id = ?
+            ORDER BY payments.created_at DESC
+        """, (user_id,)).fetchall()
+
     close_db_connection(conn)
-    
+
     return render_template("payments.html", payments=payments)
 
 
 @app.route("/update_payment_status/<int:payment_id>/<status>")
-@admin_required
+@login_required
 def update_payment_status(payment_id, status):
-    """Update payment status"""
+    """Update payment status. Admin can update any; users can update their own payments."""
     if status not in ["Pending", "Completed", "Failed"]:
         return "Invalid status", 400
-    
+
+    user_id = session.get("user_id")
+    role = session.get("role")
+
     conn = get_db_connection()
-    
+    payment = conn.execute("SELECT * FROM payments WHERE id=?", (payment_id,)).fetchone()
+
+    if not payment:
+        close_db_connection(conn)
+        return "Payment not found", 404
+
+    # Only admin or the payment owner can update status
+    if role != "admin" and payment["user_id"] != user_id:
+        close_db_connection(conn)
+        return "Access Denied", 403
+
     if status == "Completed":
         conn.execute(
             "UPDATE payments SET payment_status=?, payment_date=CURRENT_TIMESTAMP WHERE id=?",
@@ -829,10 +876,10 @@ def update_payment_status(payment_id, status):
             "UPDATE payments SET payment_status=? WHERE id=?",
             (status, payment_id)
         )
-    
+
     conn.commit()
     close_db_connection(conn)
-    
+
     return redirect("/payments")
 
 
