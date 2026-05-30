@@ -89,6 +89,22 @@
             flex-wrap: wrap;
             justify-content: center;
         }
+
+        /* Ensure the user info inside the menu only appears when the menu is active (mobile).
+           Prevent duplicate user section on desktop where the desktop user section is shown. */
+        .navbar-menu .navbar-user-section {
+            display: none;
+        }
+        .navbar-menu.active .navbar-user-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            border-left: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 0 0 0;
+            margin: 16px 0 0 0;
+            gap: 8px;
+        }
         
         .navbar-link {
             color: rgba(255, 255, 255, 0.9);
@@ -190,6 +206,8 @@
             max-width: 1600px;
             margin: 0 auto;
         }
+
+        /* (card styles removed per request to restore previous layout) */
         
         /* Responsive Design */
         @media (max-width: 1024px) {

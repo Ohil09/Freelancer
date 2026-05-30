@@ -67,22 +67,20 @@
 
                     <!-- Additional Actions -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        {% if session.get('role') == 'freelancer' %}
                         <a href="/time/{{ project.id }}" style="display: flex; align-items: center; justify-content: center; background: #dbeafe; color: #1e40af; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; transition: all 0.2s ease; border: 1px solid #bfdbfe;" onmouseover="this.style.background='#bfdbfe'" onmouseout="this.style.background='#dbeafe'">
                             ⏱️ Track Time
                         </a>
-                        <div style="position: relative;">
-                            <button onclick="toggleInvoiceMenu(event)" style="width: 100%; background: #dcfce7; color: #15803d; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; transition: all 0.2s ease; border: 1px solid #bbf7d0; cursor: pointer;" onmouseover="this.style.background='#bbf7d0'" onmouseout="this.style.background='#dcfce7'">
-                                💰 Invoice ▼
-                            </button>
-                            <div class="invoice-menu" style="display: none; position: absolute; top: 100%; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 10; min-width: 200px; margin-top: 6px; overflow: hidden;">
-                                <a href="/invoice/{{ project.id }}" style="display: block; padding: 12px 16px; text-decoration: none; color: #3b82f6; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f1f5f9; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#f0f9ff'" onmouseout="this.style.backgroundColor='white'">
-                                    👁️ View Invoice
-                                </a>
-                                <a href="/invoice_request/{{ project.id }}" style="display: block; padding: 12px 16px; text-decoration: none; color: #10b981; font-size: 13px; font-weight: 500; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#f0fdf4'" onmouseout="this.style.backgroundColor='white'">
-                                    📝 Request Invoice
-                                </a>
-                            </div>
-                        </div>
+                        {% else %}
+                        <a href="/time_tracking" style="display: flex; align-items: center; justify-content: center; background: #eef2ff; color: #3730a3; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; transition: all 0.2s ease; border: 1px solid #e0e7ff;" onmouseover="this.style.background='#e0e7ff'" onmouseout="this.style.background='#eef2ff'">
+                            ⏱️ Time Logs
+                        </a>
+                        {% endif %}
+
+                        <!-- Simplified single Invoice button (no dropdown) -->
+                        <a href="/invoice/{{ project.id }}" style="display: flex; align-items: center; justify-content: center; background: #dcfce7; color: #15803d; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; transition: all 0.2s ease; border: 1px solid #bbf7d0;" onmouseover="this.style.background='#bbf7d0'" onmouseout="this.style.background='#dcfce7'">
+                            💰 Invoice
+                        </a>
                     </div>
                 </div>
             </div>
@@ -152,32 +150,5 @@
     }
 </style>
 
-<script>
-    function toggleInvoiceMenu(event) {
-        event.preventDefault();
-        const button = event.target;
-        const menu = button.nextElementSibling;
-        const isOpen = menu.style.display === 'block';
-        
-        // Close all other menus
-        document.querySelectorAll('.invoice-menu').forEach(m => {
-            if (m !== menu) m.style.display = 'none';
-        });
-        
-        // Toggle current menu
-        menu.style.display = isOpen ? 'none' : 'block';
-        
-        // Close on click outside
-        if (!isOpen) {
-            setTimeout(() => {
-                document.addEventListener('click', function closeMenu(e) {
-                    if (!button.parentElement.contains(e.target) && !menu.contains(e.target)) {
-                        menu.style.display = 'none';
-                        document.removeEventListener('click', closeMenu);
-                    }
-                });
-            }, 0);
-        }
-    }
-</script>
+<!-- invoice dropdown removed; no JS needed -->
 {% endblock %}

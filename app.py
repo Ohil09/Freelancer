@@ -617,33 +617,46 @@ def project_progress():
 # ==================== INVOICE MANAGEMENT ROUTES ====================
 
 @app.route("/invoice/<int:project_id>")
-@freelancer_required
+@login_required
 def invoice(project_id):
-    """Generate invoice for a project"""
-    user_id = session["user_id"]
+    """Generate invoice for a project.
+
+    Admins may view any project's invoice. Freelancers may only view invoices
+    for projects they own.
+    """
+    role = session.get("role")
+    user_id = session.get("user_id")
     conn = get_db_connection()
-    
-    # Get project
-    project = conn.execute(
-        "SELECT * FROM projects WHERE id=? AND user_id=?",
-        (project_id, user_id)
-    ).fetchone()
-    
+
+    # Get project: admins can view any project, freelancers only their own
+    if role == "admin":
+        project = conn.execute(
+            "SELECT * FROM projects WHERE id=?",
+            (project_id,)
+        ).fetchone()
+        invoice_hours_row = conn.execute(
+            "SELECT IFNULL(SUM(hours), 0) as total FROM time_logs WHERE project_id=?",
+            (project_id,)
+        ).fetchone()
+    else:
+        project = conn.execute(
+            "SELECT * FROM projects WHERE id=? AND user_id=?",
+            (project_id, user_id)
+        ).fetchone()
+        invoice_hours_row = conn.execute(
+            "SELECT IFNULL(SUM(hours), 0) as total FROM time_logs WHERE project_id=? AND user_id=?",
+            (project_id, user_id)
+        ).fetchone()
+
     if not project:
         close_db_connection(conn)
         return "Project not found", 404
-    
-    # Calculate total hours and amount
-    total_hours_result = conn.execute(
-        "SELECT IFNULL(SUM(hours), 0) as total FROM time_logs WHERE project_id=? AND user_id=?",
-        (project_id, user_id)
-    ).fetchone()
-    
-    total_hours = float(total_hours_result["total"] or 0)
+
+    total_hours = float(invoice_hours_row["total"] or 0)
     total_amount = total_hours * float(project["rate"])
-    
+
     close_db_connection(conn)
-    
+
     return render_template(
         "invoice.html",
         project=project,
