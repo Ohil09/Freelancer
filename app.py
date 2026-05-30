@@ -691,12 +691,22 @@ def invoice_request(project_id):
     total_amount = total_hours * float(project["rate"])
     
     if request.method == "POST":
+        # Allow client to include an active running session's hours
+        running_hours = request.form.get('running_hours')
+        try:
+            running_hours_val = float(running_hours) if running_hours else 0.0
+        except ValueError:
+            running_hours_val = 0.0
+
+        final_hours = total_hours + running_hours_val
+        final_amount = final_hours * float(project['rate'])
+
         # Create invoice request
         conn.execute(
             """INSERT INTO invoice_requests
                (project_id, user_id, total_hours, total_amount)
                VALUES (?, ?, ?, ?)""",
-            (project_id, user_id, total_hours, total_amount)
+            (project_id, user_id, final_hours, final_amount)
         )
         conn.commit()
         close_db_connection(conn)

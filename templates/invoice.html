@@ -27,24 +27,88 @@
 
         <p>
             <strong>Rate:</strong>
-            ${{ project.rate }}/hour
+            ${{ "%.2f"|format(project.rate) }}/hour
         </p>
 
         <p>
             <strong>Total Hours:</strong>
-            {{ hours }}
+            {{ "%.2f"|format(hours) }}
         </p>
 
         <p class="text-2xl font-bold text-green-600">
-            Total Amount: ${{ total }}
+            Total Amount: ${{ "%.2f"|format(total) }}
         </p>
 
     </div>
 
+    {% if session.get('role') != 'admin' %}
+    <form method="POST" action="/invoice_request/{{ project.id }}" id="invoiceForm" class="mt-6">
+        <input type="hidden" name="running_hours" id="runningHoursInput" value="0">
+        <div id="runningSection" style="display:none; margin-bottom:8px;">
+            <label style="display:flex; gap:8px; align-items:center;">
+                <input type="checkbox" id="includeRunning" checked>
+                <span id="runningText">Include running session: 0h 00m 00s</span>
+            </label>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
+            Create Invoice (include running session if checked)
+        </button>
+        <a href="/projects" class="ml-3 bg-gray-500 text-white px-6 py-3 rounded">
+            Cancel
+        </a>
+    </form>
+    {% else %}
     <a href="/projects"
        class="mt-6 inline-block bg-blue-500 text-white px-5 py-2 rounded">
         Back
     </a>
+    {% endif %}
+
+    <script>
+        // Timer keys from timer.js
+        const TIMER_KEY = 'freelancer_timer_start';
+        const TIMER_PROJECT_KEY = 'freelancer_timer_project';
+
+        function getElapsedSeconds() {
+            const startTime = localStorage.getItem(TIMER_KEY);
+            if (!startTime) return 0;
+            return Math.floor((Date.now() - parseInt(startTime)) / 1000);
+        }
+
+        function formatElapsed(elapsed) {
+            const h = Math.floor(elapsed / 3600);
+            const m = Math.floor((elapsed % 3600) / 60);
+            const s = elapsed % 60;
+            return h + 'h ' + String(m).padStart(2,'0') + 'm ' + String(s).padStart(2,'0') + 's';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                const runningProject = localStorage.getItem(TIMER_PROJECT_KEY);
+                const projectId = '{{ project.id }}';
+                if (runningProject && runningProject === projectId) {
+                    const elapsed = getElapsedSeconds();
+                    if (elapsed > 0) {
+                        document.getElementById('runningSection').style.display = 'block';
+                        document.getElementById('runningText').innerText = 'Include running session: ' + formatElapsed(elapsed);
+                        const hours = (elapsed / 3600).toFixed(2);
+                        document.getElementById('runningHoursInput').value = hours;
+
+                        // Toggle hidden input based on checkbox
+                        document.getElementById('includeRunning').addEventListener('change', function(e){
+                            if (e.target.checked) {
+                                document.getElementById('runningHoursInput').value = hours;
+                            } else {
+                                document.getElementById('runningHoursInput').value = 0;
+                            }
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn('Timer check failed', e);
+            }
+        });
+    </script>
 
 </div>
 
