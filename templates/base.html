@@ -373,18 +373,6 @@
                         💰 Invoices
                     </a>
                 {% endif %}
-                
-                <div class="navbar-user-section" id="userSection">
-                    <div class="navbar-user-info">
-                        <div class="navbar-user-avatar">{{ session.get("username")[0].upper() }}</div>
-                        <div>
-                            <div class="navbar-username">{{ session.get("username") }}</div>
-                        </div>
-                    </div>
-                    <a href="/logout" class="navbar-link btn-logout">
-                        Logout
-                    </a>
-                </div>
             </div>
             
             <div class="navbar-user-section" id="userSectionDesktop">
@@ -404,9 +392,11 @@
     <script>
         function toggleMenu() {
             const menu = document.getElementById('navbarMenu');
-            const userSection = document.getElementById('userSection');
+            const userSection = document.getElementById('userSectionDesktop');
             menu.classList.toggle('active');
-            userSection.classList.toggle('active');
+            if (window.innerWidth <= 768 && userSection) {
+                userSection.classList.toggle('active');
+            }
         }
         
         // Close menu on link click
@@ -414,7 +404,10 @@
             link.addEventListener('click', () => {
                 if (window.innerWidth <= 768) {
                     document.getElementById('navbarMenu').classList.remove('active');
-                    document.getElementById('userSection').classList.remove('active');
+                    const userSection = document.getElementById('userSectionDesktop');
+                    if (userSection) {
+                        userSection.classList.remove('active');
+                    }
                 }
             });
         });
