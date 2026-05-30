@@ -82,7 +82,7 @@ Submit Progress
 <tr class="border-b">
 
 <td class="p-4">{{ update.project_name }}</td>
-<td class="p-4">{{ update.progress }}%</td>
+<td class="p-4">{{ update.progress|int }}&#37;</td>
 <td class="p-4">{{ update.completed_tasks }}</td>
 <td class="p-4">{{ update.remaining_work }}</td>
 <td class="p-4">{{ update.remarks }}</td>

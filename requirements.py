@@ -2,7 +2,11 @@
 Freelancer Time and Invoice Management System
 Requirements and Dependencies
 
-This file documents all required packages and their versions for running this application.
+This module is a documentation-only file that lists the project's Python
+dependencies and installation instructions. It is intentionally kept as a
+module-level docstring so that importing or compiling the package does not
+raise syntax errors.
+
 Python version: 3.8 or higher
 
 Installation Instructions:
@@ -12,16 +16,14 @@ Installation Instructions:
    - Linux/Mac: source venv/bin/activate
 3. Install dependencies: pip install -r requirements.txt
 
-Or install using pip directly:
-pip install Flask==2.3.3 Werkzeug==2.3.7
+Direct pip install example:
+    pip install Flask==2.3.3 Werkzeug==2.3.7 python-dotenv==1.0.0
+
+Recommended packages:
+ - Flask==2.3.3
+ - Werkzeug==2.3.7
+ - python-dotenv==1.0.0
+
+This file is intentionally non-executable Python and serves only as
+human-readable documentation of required packages.
 """
-
-# Core Framework
-Flask==2.3.3  # Web framework for building the application
-Werkzeug==2.3.7  # WSGI utilities for Flask
-
-# Database
-# SQLite is built-in with Python, no additional package needed
-
-# Additional utilities (optional but recommended)
-python-dotenv==1.0.0  # For environment variable management (optional)

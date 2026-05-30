@@ -31,9 +31,9 @@
                         <td style="padding:12px;">
                             <div style="display:flex; align-items:center; gap:8px;">
                                 <div style="flex:1; background:#f1f5f9; height:8px; border-radius:999px; overflow:hidden;">
-                                    <div style="background:#10b981; height:8px; width: {{ update.progress }}%;"></div>
+                                    <div style="background:#10b981; height:8px; width: {{ update.progress|int }}&#37;;"></div>
                                 </div>
-                                <div style="min-width:40px; font-weight:600;">{{ update.progress }}%</div>
+                                <div style="min-width:40px; font-weight:600;">{{ update.progress|int }}&#37;</div>
                             </div>
                         </td>
                         <td style="padding:12px;"><span class="badge badge-success">{{ update.completed_tasks }}</span></td>

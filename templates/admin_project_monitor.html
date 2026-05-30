@@ -19,12 +19,12 @@
 
         <div class="card">
             <div style="font-size: 14px; color: #64748b;">Average Progress</div>
-            <div style="font-size: 28px; font-weight: 700; color: #10b981;">
-                {% set total = updates|map(attribute='progress')|list|sum %}
+                <div style="font-size: 28px; font-weight: 700; color: #10b981;">
+                {% set total = updates|map(attribute='progress')|map('int')|list|sum %}
                 {% if updates|length > 0 %}
-                    {{ (total / updates|length)|int }}%
+                    {{ (total / updates|length)|int }}&#37;
                 {% else %}
-                    0%
+                    0&#37;
                 {% endif %}
             </div>
         </div>
@@ -32,7 +32,7 @@
         <div class="card">
             <div style="font-size: 14px; color: #64748b;">Total Hours Worked</div>
             <div style="font-size: 28px; font-weight: 700; color: #7c3aed;">
-                {% set hours = updates|map(attribute='completed_tasks')|list|sum %}
+                {% set hours = updates|map(attribute='completed_tasks')|map('int')|list|sum %}
                 {{ hours }}h
             </div>
         </div>
@@ -60,9 +60,9 @@
                         <td style="padding: 12px;">
                             <div style="display:flex; align-items:center; gap:8px;">
                                 <div style="flex:1; background:#f1f5f9; height:8px; border-radius:999px; overflow:hidden;">
-                                    <div style="background:#4f46e5; height:8px; width: {{ u.progress }}%;"></div>
+                                    <div style="background:#4f46e5; height:8px; width: {{ u.progress|int }}&#37;;"></div>
                                 </div>
-                                <div style="min-width:40px; font-weight:600;">{{ u.progress }}%</div>
+                                <div style="min-width:40px; font-weight:600;">{{ u.progress|int }}&#37;</div>
                             </div>
                         </td>
                         <td style="padding: 12px;"><span class="badge badge-success">{{ u.completed_tasks }}</span></td>
